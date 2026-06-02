@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LinkerArg Include="-Wl,-lQt6Widgets" />
+    <LinkerArg Include="-Wl,-lQt6Gui" />
+    <LinkerArg Include="-Wl,-lQt6Core" />
+    <LinkerArg Include="-lstdc++" />
+
+    <DirectPInvoke Include="libQtGlue" />
+    <NativeLibrary Include="../bld/libQtGlue.a" />
+  </ItemGroup>
+
+</Project>
