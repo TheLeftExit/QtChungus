@@ -1,22 +1,41 @@
 using System.Drawing;
+using System.Reflection.Metadata;
 
-public readonly struct PushButton : IWidget<PushButton>
+public readonly struct QPushButton : IWidget<QPushButton>
 {
     public readonly QObject Handle { get; init; }
-    public static PushButton New(QObject parent) => new() { Handle = Qt.qpushbutton_new(parent) };
-
-    public unsafe string Text
-    {
-        get => new(Qt.qabstractbutton_text(Handle));
-        set => Qt.qabstractbutton_settext(Handle, value);
-    }
+    public static QPushButton New(QObject parent) => new() { Handle = QObject.CreateWidget("QPushButton", parent) };
 
     public Rectangle Bounds
     {
-        get => Qt.qwidget_geometry(Handle);
-        set => Qt.qwidget_setgeometry(Handle, value);
+        get => Handle.GetRectangle("geometry");
+        set => Handle.SetRectangle("geometry", value);
+    }
+
+    public string Text
+    {
+        get => Handle.GetString("text");
+        set => Handle.SetString("text", value);
     }
 
     [QtSignal("clicked", "clicked()")]
     public void OnClicked() => throw new NotSupportedException();
+}
+
+public readonly struct QLabel : IWidget<QLabel>
+{
+    public readonly QObject Handle { get; init; }
+    public static QLabel New(QObject parent) => new() { Handle = QObject.CreateWidget("QLabel", parent) };
+
+    public Rectangle Bounds
+    {
+        get => Handle.GetRectangle("geometry");
+        set => Handle.SetRectangle("geometry", value);
+    }
+
+    public string Text
+    {
+        get => Handle.GetString("text");
+        set => Handle.SetString("text", value);
+    }
 }

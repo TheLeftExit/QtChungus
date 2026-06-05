@@ -69,8 +69,6 @@ public class CommandBinding<TViewModel, TWidget> : ISignalHandler<TViewModel>
     }
 
     public void ProcessPropertyChanged(TViewModel sender, string propertyName) { }
-
-
 }
 
 public static class ViewBuilderExtensions

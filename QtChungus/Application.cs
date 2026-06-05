@@ -1,3 +1,5 @@
+using System.IO.Compression;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualBasic;
@@ -44,24 +46,33 @@ public partial class Application : IDisposable
     public Application()
     {
         if (State != ApplicationState.NotCreated) throw new InvalidOperationException();
-        Instance = this;
+
         _instance = CreateQApplication();
-        InitializeRouter();
-        SynchronizationContext.SetSynchronizationContext(new QtSynchronizationContext());
+        Instance = this;
         State = ApplicationState.Created;
+        
+        InitializeRouter();
+        
     }
     public int Run()
     {
         if (State != ApplicationState.Created) throw new InvalidOperationException();
+
         State = ApplicationState.Running;
+        var oldSc = SynchronizationContext.Current;
+        SynchronizationContext.SetSynchronizationContext(new QtSynchronizationContext());
         var result = Qt.qapplication_exec(_instance);
+        SynchronizationContext.SetSynchronizationContext(oldSc);
         State = ApplicationState.Finished;
+
         return result;
     }
     public void Dispose()
     {
         if (State is not ApplicationState.Created and not ApplicationState.Finished) throw new InvalidOperationException();
+
         Qt.qapplication_delete(_instance);
+
         State = ApplicationState.Disposed;
     }
 
@@ -69,8 +80,8 @@ public partial class Application : IDisposable
     {
         using var application = new Application();
         var handle = application._instance;
-        Qt.qguiapplication_setquitonlastwindowclosed(handle, false);
-        mainFunc().ContinueWith(_ => Qt.qcoreapplication_exit(handle), TaskContinuationOptions.None);
+        handle.SetBool("quitOnLastWindowClosed", false);
+        mainFunc().ContinueWith(_ => Qt.qcoreapplication_exit(handle));
         application.Run();
     }
 }

@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 Application.Run(async () =>
 {
     var builder = new ViewBuilder<MyViewModel>();
-    var button = builder.AddWidget<PushButton>(x =>
+    var button = builder.AddWidget<QPushButton>(x =>
     {
         x.Bounds = new(10, 10, 120, 30);
         x.Text = "Click me!";
@@ -36,7 +36,7 @@ public class MyViewModel : BindableBase
         Text = $"Clicked {++counter} times";
 
         var builder = new ViewBuilder<MyViewModel>();
-        var button = builder.AddWidget<PushButton>(x =>
+        var button = builder.AddWidget<QPushButton>(x =>
         {
             x.Bounds = new(10, 10, 120, 30);
             x.Text = "Click me!";

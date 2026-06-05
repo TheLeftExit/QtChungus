@@ -58,7 +58,7 @@ public unsafe partial class SignalRouter
 
     [LibraryImport(Qt.libraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial void ConnectSignal(QObject target, string signalName);
-    [LibraryImport(Qt.libraryName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Qt.libraryName)]
     public static partial void ConnectEvents(QObject target);
 }
 

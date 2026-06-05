@@ -11,6 +11,7 @@ qt_standard_project_setup()
 
 qt_add_library(QtGlue STATIC
     Classes.cxx
+    Properties.cxx
     SignalRouter.cxx
 )
 

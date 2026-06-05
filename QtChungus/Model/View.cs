@@ -3,12 +3,6 @@ using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
-public interface ISignalHandler<TViewModel>
-{
-    void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel);
-    void ProcessPropertyChanged(TViewModel viewModel, string propertyName);
-}
-
 public interface IWidget<TSelf> where TSelf : IWidget<TSelf>
 {
     QObject Handle { get; init; }
@@ -16,6 +10,12 @@ public interface IWidget<TSelf> where TSelf : IWidget<TSelf>
 }
 
 public record struct WidgetHandle<TWidget>(QObject Handle);
+
+public interface ISignalHandler<TViewModel>
+{
+    void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel);
+    void ProcessPropertyChanged(TViewModel viewModel, string propertyName);
+}
 
 public interface IViewBuilder<TViewModel>
 {
@@ -30,7 +30,7 @@ public class ViewBuilder<TViewModel> : IViewBuilder<TViewModel>
 
     public ViewBuilder()
     {
-        _handle = Qt.qmainwindow_new();
+        _handle = QObject.CreateWidget("QMainWindow", default);
         _signalHandlers = new();
     }
 
@@ -115,7 +115,7 @@ public class View<TViewModel>
 
         public Task WhenClosed()
         {
-            return Qt.qwidget_isvisible(Handle) ? _tcs.Task : Task.CompletedTask;
+            return Handle.GetBool("visible") ? _tcs.Task : Task.CompletedTask;
         }
 
         public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
@@ -129,7 +129,7 @@ public class View<TViewModel>
         private async void ProcessDestroyed()
         {
             await Task.Yield();
-            if (!Qt.qwidget_isvisible(Handle))
+            if (!Handle.GetBool("visible"))
             {
                 _tcs.SetResult();
             }
