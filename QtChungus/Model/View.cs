@@ -3,10 +3,11 @@ using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
-public interface IWidget<TSelf> where TSelf : IWidget<TSelf>
+public interface IWidget
 {
     QObject Handle { get; init; }
-    abstract static TSelf New(QObject parent);
+    abstract static string ClassName { get; }
+    void SetDefaults() { }
 }
 
 public record struct WidgetHandle<TWidget>(QObject Handle);
@@ -34,9 +35,11 @@ public class ViewBuilder<TViewModel> : IViewBuilder<TViewModel>
         _signalHandlers = new();
     }
 
-    public WidgetHandle<TWidget> AddWidget<TWidget>(Action<TWidget> configureWidget) where TWidget : IWidget<TWidget>
+    public WidgetHandle<TWidget> AddWidget<TWidget>(Action<TWidget> configureWidget) where TWidget : IWidget, new()
     {
-        var widget = TWidget.New(_handle);
+        var widgetHandle = QObject.CreateWidget(TWidget.ClassName, _handle);
+        var widget = new TWidget { Handle = widgetHandle };
+        widget.SetDefaults();
         configureWidget(widget);
         return new(widget.Handle);
     }
@@ -74,7 +77,7 @@ public class View<TViewModel>
         using var signalSubscription = SignalRouter.Subscribe(_handle, signalReceiver);
         await WhenClosed();
 
-        Console.WriteLine("Destroyed");
+        //Console.WriteLine("Destroyed");
 
         if (bindableViewModel is not null)
         {
@@ -111,16 +114,16 @@ public class View<TViewModel>
 
     private record ViewCloseEventReceiver(QObject Handle) : ISignalReceiver
     {
-        private TaskCompletionSource _tcs = new(); // "run continuations asynchronously" not needed since we SetResult after a yield
+        private TaskCompletionSource _tcs = new();
 
         public Task WhenClosed()
         {
-            return Handle.GetBool("visible") ? _tcs.Task : Task.CompletedTask;
+            return Handle.GetProperty<bool>("visible") ? _tcs.Task : Task.CompletedTask;
         }
 
         public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
         {
-            if(sender == Handle && signalName is "QEvent::Close")
+            if (sender == Handle && signalName is "QEvent::Close")
             {
                 ProcessDestroyed();
             }
@@ -129,7 +132,7 @@ public class View<TViewModel>
         private async void ProcessDestroyed()
         {
             await Task.Yield();
-            if (!Handle.GetBool("visible"))
+            if (!Handle.GetProperty<bool>("visible"))
             {
                 _tcs.SetResult();
             }

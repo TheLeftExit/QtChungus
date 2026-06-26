@@ -3,7 +3,7 @@ using System.Reflection;
 
 public class PropertyBinding<TViewModel, TWidget, TValue> : ISignalHandler<TViewModel>
     where TViewModel : class
-    where TWidget : struct, IWidget<TWidget>
+    where TWidget : unmanaged, IWidget
 {
     public required QObject WidgetHandle { private get; init; }
     public required string? SignalName { private get; init; }
@@ -17,7 +17,8 @@ public class PropertyBinding<TViewModel, TWidget, TValue> : ISignalHandler<TView
     public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
     {
         if (sender != WidgetHandle) return;
-        if (name != SignalName) return;
+        if (!name.SequenceEqual(SignalName)) return;
+        
         Push(viewModel, PushDirection.ToViewModel);
     }
 
@@ -55,7 +56,7 @@ public class PropertyBinding<TViewModel, TWidget, TValue> : ISignalHandler<TView
 
 public class CommandBinding<TViewModel, TWidget> : ISignalHandler<TViewModel>
     where TViewModel : class
-    where TWidget : IWidget<TWidget>
+    where TWidget : unmanaged, IWidget
 {
     public required QObject WidgetHandle { private get; init; }
     public required string SignalName { private get; init; }
@@ -65,6 +66,7 @@ public class CommandBinding<TViewModel, TWidget> : ISignalHandler<TViewModel>
     {
         if (sender != WidgetHandle) return;
         if (!name.SequenceEqual(SignalName)) return;
+        
         ViewModelCommandMethod(viewModel);
     }
 
@@ -80,7 +82,7 @@ public static class ViewBuilderExtensions
         Expression<Func<TViewModel, TValue>> viewModelPropertySelector
     )
         where TViewModel : class
-        where TWidget : struct, IWidget<TWidget>
+        where TWidget : unmanaged, IWidget
     {
         if (controlPropertySelector is not { Body: MemberExpression { Member: PropertyInfo controlProperty and { GetMethod: not null } } })
         {
@@ -117,7 +119,7 @@ public static class ViewBuilderExtensions
         Expression<Func<TViewModel, Action>> viewModelCommandSelector
     )
         where TViewModel : class
-        where TWidget : struct, IWidget<TWidget>
+        where TWidget : unmanaged, IWidget
     {
         if (controlCommandSelector is not { Body: UnaryExpression { Operand: MethodCallExpression { Object: ConstantExpression { Value: MethodInfo controlCommand } } } })
         {

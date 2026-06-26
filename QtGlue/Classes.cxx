@@ -3,8 +3,9 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QMetaMethod>
-#include <QTextEdit>
+#include <QLineEdit>
 #include <QLabel>
+#include <QTreeView>
 
 #include <string>
 #include <iostream>
@@ -18,6 +19,8 @@ extern "C" QWidget *CreateWidget(char *widgetName, QWidget *parent)
     TRY_RETURN(QMainWindow)
     TRY_RETURN(QPushButton)
     TRY_RETURN(QLabel)
+    TRY_RETURN(QLineEdit)
+    TRY_RETURN(QTreeView)
 #undef TRY_RETURN
     qFatal("CreateWidget called on an invalid widget name.");
 }

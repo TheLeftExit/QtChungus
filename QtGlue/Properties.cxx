@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QRect>
 #include <QMetaObject>
+#include <QMetaType>
 #include <QMetaProperty>
 
 const QMetaProperty FindProperty(QObject *target, char *name)
@@ -10,25 +11,72 @@ const QMetaProperty FindProperty(QObject *target, char *name)
     return metaObject->property(indexOfProperty);
 }
 
+void EncodeQVariant(QVariant variant, QMetaType::Type *type, void **value)
+{
+    *type = static_cast<QMetaType::Type>(variant.typeId());
+    switch (*type)
+    {
+    case QMetaType::QString:
+    {
+        QString string = variant.toString();
+        size_t length = (string.size() + 1) * sizeof(char16_t);
+        char16_t *buffer = static_cast<char16_t *>(malloc(length));
+        memcpy(buffer, string.utf16(), length);
+        *value = buffer;
+        break;
+    }
+    case QMetaType::QRect:
+    {
+        QRect rect = variant.toRect();
+        qint32 *buffer = static_cast<qint32 *>(malloc(sizeof(qint32) * 4));
+        buffer[0] = rect.x();
+        buffer[1] = rect.y();
+        buffer[2] = rect.width();
+        buffer[3] = rect.height();
+        *value = buffer;
+        break;
+    }
+    case QMetaType::Bool:
+    {
+        *value = reinterpret_cast<void *>(variant.toBool());
+        break;
+    }
+    default:
+        qFatal("EncodeQVariant failed!");
+    }
+}
+
+QVariant DecodeQVariant(QMetaType::Type type, void *value)
+{
+    switch (type)
+    {
+    case QMetaType::QString:
+    {
+        return QVariant(QString((char16_t *)value));
+    }
+    case QMetaType::QRect:
+    {
+        qint32 *buffer = (qint32 *)value;
+        return QVariant(QRect(buffer[0], buffer[1], buffer[2], buffer[3]));
+    }
+    case QMetaType::Bool:
+    {
+        return QVariant(value == nullptr);
+    }
+    default:
+        qFatal("DecodeQVariant failed!");
+    }
+}
+
 extern "C"
 {
-    const ushort *GetProperty_string(QObject *target, char *name) { return FindProperty(target, name).read(target).toString().utf16(); }
-    void SetProperty_string(QObject *target, char *name, char16_t *value) { FindProperty(target, name).write(target, QString(value)); }
-
-    qint64 GetProperty_int64(QObject *target, char *name) { return FindProperty(target, name).read(target).toLongLong(); }
-    void SetProperty_int64(QObject *target, char *name, qint64 value) { FindProperty(target, name).write(target, value); }
-
-    void GetProperty_rect(QObject *target, char *name, qint32 *buffer)
+    void GetPropertyCore(QObject *target, char *name, QMetaType::Type *type, void **value)
     {
-        QRect result = FindProperty(target, name).read(target).toRect();
-        buffer[0] = result.x();
-        buffer[1] = result.y();
-        buffer[2] = result.width();
-        buffer[3] = result.height();
+        EncodeQVariant(FindProperty(target, name).read(target), type, value);
     }
-    void SetProperty_rect(QObject *target, char *name, qint32 *buffer)
+
+    void SetPropertyCore(QObject *target, char *name, QMetaType::Type type, void *value)
     {
-        QRect value = QRect(buffer[0], buffer[1], buffer[2], buffer[3]);
-        FindProperty(target, name).write(target, value);
+        FindProperty(target, name).write(target, DecodeQVariant(type, value));
     }
 }

@@ -20,6 +20,7 @@ public unsafe partial class SignalRouter
                 var signalNameUtf8 = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(signalName);
                 Span<char> signalNameUtf16 = stackalloc char[Encoding.UTF8.GetCharCount(signalNameUtf8)];
                 Encoding.UTF8.GetChars(signalNameUtf8, signalNameUtf16);
+                //Console.WriteLine(signalNameUtf16);
                 foreach(var subscriber in subscribers)
                 {
                     subscriber.ProcessSignal(sender, signalNameUtf16);

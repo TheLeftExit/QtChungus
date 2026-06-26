@@ -13,6 +13,7 @@ qt_add_library(QtGlue STATIC
     Classes.cxx
     Properties.cxx
     SignalRouter.cxx
+    Model.cxx
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

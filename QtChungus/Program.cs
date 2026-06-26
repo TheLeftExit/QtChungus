@@ -12,20 +12,27 @@ Application.Run(async () =>
         x.Bounds = new(10, 10, 120, 30);
         x.Text = "Click me!";
     });
-    builder.SetBinding(button, x => x.Text, x => x.Text);
+    var textEdit = builder.AddWidget<QLineEdit>(x =>
+    {
+        x.Bounds = new(10, 50, 120, 30);
+        x.PlaceholderText = "Type something!";
+    });
+    var focusDummy = builder.AddWidget<QTreeView>(x =>
+    {
+        x.Bounds = new(10, 90, 120, 120); 
+    });
+    builder.SetBinding(button, x => x.Text, x => x.ButtonText);
+    builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
     var view = builder.Build();
 
-    for(int i = 0; i < 3; i++)
-    {
-        await view.ShowAsync(new MyViewModel());
-    }
+    await view.ShowAsync(new MyViewModel());
 });
 
 public class MyViewModel : BindableBase
 {
     private int counter = 0;
-    public string? Text
+    public string? ButtonText
     {
         get => field;
         set => SetValue(ref field, value);
@@ -33,18 +40,7 @@ public class MyViewModel : BindableBase
 
     public void Fire()
     {
-        Text = $"Clicked {++counter} times";
-
-        var builder = new ViewBuilder<MyViewModel>();
-        var button = builder.AddWidget<QPushButton>(x =>
-        {
-            x.Bounds = new(10, 10, 120, 30);
-            x.Text = "Click me!";
-        });
-        builder.SetBinding(button, x => x.Text, x => x.Text);
-        builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
-        var view = builder.Build();
-        _ = view.ShowAsync(new MyViewModel());
+        ButtonText = $"Clicked {++counter} times";
     }
 }
 

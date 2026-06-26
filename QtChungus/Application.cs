@@ -80,7 +80,7 @@ public partial class Application : IDisposable
     {
         using var application = new Application();
         var handle = application._instance;
-        handle.SetBool("quitOnLastWindowClosed", false);
+        handle.SetProperty("quitOnLastWindowClosed", false);
         mainFunc().ContinueWith(_ => Qt.qcoreapplication_exit(handle));
         application.Run();
     }
