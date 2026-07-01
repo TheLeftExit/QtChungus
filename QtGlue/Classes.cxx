@@ -6,9 +6,10 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QTreeView>
+#include <QAbstractItemView>
+#include <QAbstractItemModel>
 
 #include <string>
-#include <iostream>
 
 extern "C" QWidget *CreateWidget(char *widgetName, QWidget *parent)
 {
@@ -27,11 +28,14 @@ extern "C" QWidget *CreateWidget(char *widgetName, QWidget *parent)
 
 extern "C"
 {
-    QApplication *qapplication_new(int *argc, char **argv) { return new QApplication(*argc, argv); }
-    int qapplication_exec(QApplication *target) { return target->exec(); }
-    void qapplication_delete(QApplication *target) { delete target; }
-    void qcoreapplication_exit(QCoreApplication *target) { target->exit(); }
+    void qobject_delete(QObject *target) { delete target; }
 
+    QApplication *qapplication_new(int *argc, char **argv) { return new QApplication(*argc, argv); }
+
+    int qapplication_exec(QApplication *target) { return target->exec(); }
+    void qcoreapplication_exit(QCoreApplication *target) { target->exit(); }
     void qmainwindow_show(QMainWindow *target) { return target->show(); }
-    void qmainwindow_delete(QMainWindow *target) { delete target; }
+
+    void qabstractitemview_setmodel(QAbstractItemView *target, QAbstractItemModel *model) { target->setModel(model); }
+    QAbstractItemModel *qabstractitemview_model(QAbstractItemView *target) { return target->model(); }
 }

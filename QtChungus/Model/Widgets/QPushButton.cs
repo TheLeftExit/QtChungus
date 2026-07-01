@@ -19,14 +19,3 @@ public readonly record struct QPushButton(QObject Handle) : IWidget
     [QtSignal("clicked", "clicked()")]
     public void OnClicked() => throw new NotSupportedException();
 }
-
-public readonly record struct QTreeView(QObject Handle) : IWidget
-{
-    public static string ClassName => "QTreeView";
-
-    public Rectangle Bounds
-    {
-        get => Handle.GetProperty<Rectangle>("geometry");
-        set => Handle.SetProperty("geometry", value);
-    }
-}

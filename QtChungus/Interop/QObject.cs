@@ -22,7 +22,7 @@ public readonly unsafe partial record struct QObject(nint Handle)
     private static partial void SetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, QVariant.TypeCode type, void* value);
     public void SetProperty<T>(string propertyName, T value) where T : notnull
     {
-        using var variant = QVariant.Create(value);
+        var variant = QVariant.Create(value);
         SetPropertyCore(this, propertyName, variant.Type, variant.Data);
     }
 }

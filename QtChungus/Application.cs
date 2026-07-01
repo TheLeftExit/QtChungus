@@ -71,7 +71,7 @@ public partial class Application : IDisposable
     {
         if (State is not ApplicationState.Created and not ApplicationState.Finished) throw new InvalidOperationException();
 
-        Qt.qapplication_delete(_instance);
+        Qt.qobject_delete(_instance);
 
         State = ApplicationState.Disposed;
     }

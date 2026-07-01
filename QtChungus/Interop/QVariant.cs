@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
 public unsafe readonly ref struct QVariant
@@ -30,10 +31,15 @@ public unsafe readonly ref struct QVariant
         }
         return Unsafe.As<TFrom, TTo>(ref source);
     }
+    public void Write(TypeCode* type, void** data)
+    {
+        *type = Type;
+        *data = Data;
+    }
     /*
     Checklist for new types:
     - TypeCode value
-    - Entries in Create<T>, Get<T>, Dispose()
+    - Entries in _supportedTypes, Create<T>, Get<T>, Dispose()
     - API: Constructor, GetX, optionally FreeX
     - C++: entries in EncodeQVariant, DecodeQVariant
     */
@@ -45,12 +51,28 @@ public unsafe readonly ref struct QVariant
         Bool = 1,
         QString = 10,
         QRect = 19,
+        QSize = 21,
+        VoidStar = 31
     }
+    private static readonly HashSet<Type> _supportedTypes = [
+        typeof(bool),
+        typeof(string),
+        typeof(Rectangle),
+        typeof(Size),
+        typeof(nint)
+    ];
+    public static void EnsureSupportedType<T>()
+    {
+        if (!_supportedTypes.Contains(typeof(T))) throw new NotImplementedException();
+    }
+
     public static QVariant Create<T>(T value) where T : notnull
     {
         if (TryCreate<T, bool>(value, out var resultBool)) return new(resultBool);
-        if (TryCreate<T, string>(value, out var resultString)) return new(resultString);
+        if (TryCreate<T, string?>(value, out var resultString)) return new(resultString);
         if (TryCreate<T, Rectangle>(value, out var resultRectangle)) return new(resultRectangle);
+        if (TryCreate<T, Size>(value, out var resultSize)) return new(resultSize);
+        if (TryCreate<T, nint>(value, out var resultIntPtr)) return new(resultIntPtr);
         throw new NotImplementedException();
     }
     public T Get<T>() where T : notnull
@@ -58,8 +80,10 @@ public unsafe readonly ref struct QVariant
         return Type switch
         {
             TypeCode.Bool => GetCore<bool, T>(GetBool()),
-            TypeCode.QString => GetCore<string, T>(GetString()),
+            TypeCode.QString => GetCore<string?, T>(GetString()),
             TypeCode.QRect => GetCore<Rectangle, T>(GetRectangle()),
+            TypeCode.QSize => GetCore<Size, T>(GetSize()),
+            TypeCode.VoidStar => GetCore<nint, T>(GetVoidStar()),
             _ => throw new NotImplementedException()
         };
     }
@@ -70,6 +94,8 @@ public unsafe readonly ref struct QVariant
             case TypeCode.Bool: return;
             case TypeCode.QString: FreeString(); return;
             case TypeCode.QRect: FreeRectangle(); return;
+            case TypeCode.QSize: FreeSize(); return;
+            case TypeCode.VoidStar: return;
             default: throw new InvalidOperationException();
         }
     }
@@ -82,19 +108,17 @@ public unsafe readonly ref struct QVariant
     }
     private bool GetBool()
     {
-        if (Type is not TypeCode.Bool) throw new InvalidOperationException();
         return Data != (void*)0;
     }
 
     // QString
-    public QVariant(string value)
+    public QVariant(string? value)
     {
         Type = TypeCode.QString;
         Data = (void*)Marshal.StringToHGlobalUni(value);
     }
-    private string GetString()
+    private string? GetString()
     {
-        if (Type is not TypeCode.QString) throw new InvalidOperationException();
         return Marshal.PtrToStringUni((nint)Data)!;
     }
     private void FreeString()
@@ -118,5 +142,34 @@ public unsafe readonly ref struct QVariant
     private void FreeRectangle()
     {
         NativeMemory.Free(Data);
+    }
+
+    // QSize
+    public QVariant(Size value)
+    {
+        Type = TypeCode.QSize;
+        Data = NativeMemory.AllocZeroed(2, sizeof(int));
+        var data = (int*)Data;
+        (data[0], data[1]) = (value.Width, value.Height);
+    }
+    private Size GetSize()
+    {
+        var data = (int*)Data;
+        return new(data[0], data[1]);
+    }
+    private void FreeSize()
+    {
+        NativeMemory.Free(Data);
+    }
+
+    // VoidStar (no Free)
+    public QVariant(nint value)
+    {
+        Type = TypeCode.VoidStar;
+        Data = (void*)value;
+    }
+    public nint GetVoidStar()
+    {
+        return (nint)Data;
     }
 }

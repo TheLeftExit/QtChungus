@@ -49,14 +49,6 @@ extern "C"
     void ConnectSignal(QObject *target, char *signalName)
     {
         QMetaMethod signal = target->metaObject()->method(target->metaObject()->indexOfMethod(signalName));
-        /*
-        if(!signal.isValid()){
-            std::cout << "Signal not found! Possible signals:" << std::endl;
-            for(int i = 0; i < target->metaObject()->methodCount(); i++){
-                std::cout << target->metaObject()->method(i).methodSignature().toStdString() << std::endl;
-            }
-        }
-        */
         int slotIndex = SignalRouter::staticMetaObject.indexOfSlot("RouteSignal()");
         QMetaMethod slot = SignalRouter::staticMetaObject.method(slotIndex);
         QObject::connect(

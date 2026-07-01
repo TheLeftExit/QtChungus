@@ -6,7 +6,11 @@ using System.Runtime.CompilerServices;
 
 Application.Run(async () =>
 {
-    var builder = new ViewBuilder<MyViewModel>();
+    var builder = new ViewBuilder<MyViewModel>(x =>
+    {
+        x.Size = new(220, 300);
+        x.Text = "QtChungus";
+    });
     var button = builder.AddWidget<QPushButton>(x =>
     {
         x.Bounds = new(10, 10, 120, 30);
@@ -17,17 +21,21 @@ Application.Run(async () =>
         x.Bounds = new(10, 50, 120, 30);
         x.PlaceholderText = "Type something!";
     });
-    var focusDummy = builder.AddWidget<QTreeView>(x =>
+    var treeView = builder.AddWidget<QTreeView>(x =>
     {
-        x.Bounds = new(10, 90, 120, 120); 
+        x.Bounds = new(10, 90, 200, 200);
+        var data = Enumerable.Range(0, 3).Select(x => new MyClass("Item" + x)).ToList();
     });
     builder.SetBinding(button, x => x.Text, x => x.ButtonText);
     builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
+    builder.SetModel(treeView, x => x.List, [new QModelColumn<PropertyChangedEventArgs, string>("Value", x => x.PropertyName!)]);
     var view = builder.Build();
 
     await view.ShowAsync(new MyViewModel());
 });
+
+public record MyClass(string Value);
 
 public class MyViewModel : BindableBase
 {
@@ -42,6 +50,8 @@ public class MyViewModel : BindableBase
     {
         ButtonText = $"Clicked {++counter} times";
     }
+
+    public PropertyChangedEventArgs[] List { get; } = Enumerable.Range(0, 5).Select(x => new PropertyChangedEventArgs(x.ToString())).ToArray();
 }
 
 public class BindableBase : INotifyPropertyChanged

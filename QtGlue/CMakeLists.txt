@@ -14,6 +14,8 @@ qt_add_library(QtGlue STATIC
     Properties.cxx
     SignalRouter.cxx
     Model.cxx
+    Variant.h
+    Variant.cxx
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

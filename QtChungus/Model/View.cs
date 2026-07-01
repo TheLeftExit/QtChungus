@@ -29,10 +29,11 @@ public class ViewBuilder<TViewModel> : IViewBuilder<TViewModel>
     private QObject _handle;
     private List<ISignalHandler<TViewModel>> _signalHandlers;
 
-    public ViewBuilder()
+    public ViewBuilder(Action<QMainWindow>? configureWindow = null)
     {
         _handle = QObject.CreateWidget("QMainWindow", default);
         _signalHandlers = new();
+        configureWindow?.Invoke(new(_handle));
     }
 
     public WidgetHandle<TWidget> AddWidget<TWidget>(Action<TWidget> configureWidget) where TWidget : IWidget, new()
@@ -73,11 +74,9 @@ public class View<TViewModel>
         }
 
         Qt.qmainwindow_show(_handle);
-
         using var signalSubscription = SignalRouter.Subscribe(_handle, signalReceiver);
+        signalReceiver.OnPropertyChanged(viewModel, new PropertyChangedEventArgs(null));
         await WhenClosed();
-
-        //Console.WriteLine("Destroyed");
 
         if (bindableViewModel is not null)
         {
