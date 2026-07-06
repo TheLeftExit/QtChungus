@@ -3,9 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
+[StructLayout(LayoutKind.Explicit)]
 public unsafe readonly ref struct QVariant
 {
+    [FieldOffset(0)]
     public readonly TypeCode Type;
+    [FieldOffset(sizeof(long))]
     public readonly void* Data;
 
     public QVariant(TypeCode type, void* data)
@@ -45,7 +48,7 @@ public unsafe readonly ref struct QVariant
     */
 
     // https://doc.qt.io/qt-6/qmetatype.html#Type-enum
-    public enum TypeCode : int
+    public enum TypeCode : long
     {
         UnknownType = 0,
         Bool = 1,
@@ -66,7 +69,7 @@ public unsafe readonly ref struct QVariant
         if (!_supportedTypes.Contains(typeof(T))) throw new NotImplementedException();
     }
 
-    public static QVariant Create<T>(T value) where T : notnull
+    public static QVariant Create<T>(T value)
     {
         if (TryCreate<T, bool>(value, out var resultBool)) return new(resultBool);
         if (TryCreate<T, string?>(value, out var resultString)) return new(resultString);
@@ -75,7 +78,7 @@ public unsafe readonly ref struct QVariant
         if (TryCreate<T, nint>(value, out var resultIntPtr)) return new(resultIntPtr);
         throw new NotImplementedException();
     }
-    public T Get<T>() where T : notnull
+    public T Get<T>()
     {
         return Type switch
         {

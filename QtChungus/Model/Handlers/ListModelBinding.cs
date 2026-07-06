@@ -47,10 +47,6 @@ public static partial class ViewBuilderExtensions
         {
             throw new NotSupportedException();
         }
-        if (!viewModelProperty.PropertyType.IsClass)
-        {
-            throw new NotSupportedException();
-        }
 
         var handler = new ListModelBinding<TViewModel, TWidget, TRow>
         {

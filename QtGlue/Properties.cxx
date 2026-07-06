@@ -14,13 +14,13 @@ const QMetaProperty FindProperty(QObject *target, char *name)
 
 extern "C"
 {
-    void GetPropertyCore(QObject *target, char *name, QMetaType::Type *type, void **value)
+    QManagedVariant GetPropertyCore(QObject *target, char *name)
     {
-        EncodeQVariant(FindProperty(target, name).read(target), type, value);
+        return EncodeQVariant(FindProperty(target, name).read(target));
     }
 
-    void SetPropertyCore(QObject *target, char *name, QMetaType::Type type, void *value)
+    void SetPropertyCore(QObject *target, char *name, QManagedVariant value)
     {
-        FindProperty(target, name).write(target, DecodeQVariant(type, value));
+        FindProperty(target, name).write(target, DecodeQVariant(value));
     }
 }

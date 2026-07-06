@@ -3,13 +3,19 @@
 #include <QVariant>
 #include <QRect>
 
+#include "Variant.h"
+
 QMetaType::Type GetTypeCode(QVariant variant)
 {
     return static_cast<QMetaType::Type>(variant.typeId());
 }
 
-void EncodeQVariant(QVariant variant, QMetaType::Type *type, void **value)
+QManagedVariant EncodeQVariant(QVariant variant)
 {
+    qint128 result = 0;
+    QMetaType::Type *type = reinterpret_cast<QMetaType::Type *>(&result);
+    void **value = reinterpret_cast<void **>(reinterpret_cast<qint64 *>(&result) + 1);
+
     *type = GetTypeCode(variant);
     switch (*type)
     {
@@ -20,7 +26,7 @@ void EncodeQVariant(QVariant variant, QMetaType::Type *type, void **value)
         char16_t *buffer = static_cast<char16_t *>(malloc(length));
         memcpy(buffer, string.utf16(), length);
         *value = buffer;
-        break;
+        return result;
     }
     case QMetaType::QRect:
     {
@@ -31,12 +37,12 @@ void EncodeQVariant(QVariant variant, QMetaType::Type *type, void **value)
         buffer[2] = rect.width();
         buffer[3] = rect.height();
         *value = buffer;
-        break;
+        return result;
     }
     case QMetaType::Bool:
     {
         *value = reinterpret_cast<void *>(variant.toBool());
-        break;
+        return result;
     }
     case QMetaType::QSize:{
         QSize size = variant.toSize();
@@ -44,19 +50,23 @@ void EncodeQVariant(QVariant variant, QMetaType::Type *type, void **value)
         buffer[0] = size.width();
         buffer[1] = size.height();
         *value = buffer;
-        break;
+        return result;
     }
     case QMetaType::VoidStar:
     {
         *value = variant.value<void *>();
+        return result;
     }
     default:
         qFatal("EncodeQVariant failed!");
     }
 }
 
-QVariant DecodeQVariant(QMetaType::Type type, void *value)
+QVariant DecodeQVariant(QManagedVariant managedVariant)
 {
+    QMetaType::Type type = *reinterpret_cast<QMetaType::Type *>(&managedVariant);
+    void *value = *reinterpret_cast<void **>(reinterpret_cast<qint64 *>(&managedVariant) + 1);
+
     switch (type)
     {
     case QMetaType::QString:

@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 [assembly: DisableRuntimeMarshalling]
 
+Console.WriteLine("Hello world!");
+
 Application.Run(async () =>
 {
     var builder = new ViewBuilder<MyViewModel>(x =>
@@ -24,18 +26,24 @@ Application.Run(async () =>
     var treeView = builder.AddWidget<QTreeView>(x =>
     {
         x.Bounds = new(10, 90, 200, 200);
-        var data = Enumerable.Range(0, 3).Select(x => new MyClass("Item" + x)).ToList();
     });
     builder.SetBinding(button, x => x.Text, x => x.ButtonText);
     builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
-    builder.SetModel(treeView, x => x.List, [new QModelColumn<PropertyChangedEventArgs, string>("Value", x => x.PropertyName!)]);
+    builder.SetModel(treeView, x => x.List, [
+        new QModelColumn<MyClass, string?>(x => x.Value),
+        new QModelColumn<MyClass, bool>(x => x.Checked)
+        ]);
     var view = builder.Build();
 
     await view.ShowAsync(new MyViewModel());
 });
 
-public record MyClass(string Value);
+public class MyClass
+{
+    public string? Value { get; set; }
+    public bool Checked { get; set; }
+}
 
 public class MyViewModel : BindableBase
 {
@@ -51,7 +59,7 @@ public class MyViewModel : BindableBase
         ButtonText = $"Clicked {++counter} times";
     }
 
-    public PropertyChangedEventArgs[] List { get; } = Enumerable.Range(0, 5).Select(x => new PropertyChangedEventArgs(x.ToString())).ToArray();
+    public MyClass[] List { get; } = Enumerable.Range(0, 5).Select(x => new MyClass { Value = x.ToString() }).ToArray();
 }
 
 public class BindableBase : INotifyPropertyChanged
