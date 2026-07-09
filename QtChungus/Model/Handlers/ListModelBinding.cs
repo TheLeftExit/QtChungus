@@ -13,7 +13,7 @@ public class ListModelBinding<TViewModel, TWidget, TRow> : ISignalHandler<TViewM
 
     public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
     {
-        return; // for now
+        return;
     }
 
     public void ProcessPropertyChanged(TViewModel sender, string? propertyName)

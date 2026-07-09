@@ -9,13 +9,19 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
+include_directories(
+    CStruct
+)
+
 qt_add_library(QtGlue STATIC
     Classes.cxx
     Properties.cxx
     SignalRouter.cxx
-    Model.cxx
-    Variant.h
-    Variant.cxx
+    QModel.cxx
+
+    CStruct/Base.cxx
+    CStruct/CVariant.cxx
+    CStruct/CModelIndex.cxx
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

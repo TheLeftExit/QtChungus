@@ -50,9 +50,9 @@ public partial class Application : IDisposable
         _instance = CreateQApplication();
         Instance = this;
         State = ApplicationState.Created;
-        
+
         InitializeRouter();
-        
+
     }
     public int Run()
     {
@@ -81,7 +81,15 @@ public partial class Application : IDisposable
         using var application = new Application();
         var handle = application._instance;
         handle.SetProperty("quitOnLastWindowClosed", false);
-        mainFunc().ContinueWith(_ => Qt.qcoreapplication_exit(handle));
+        mainFunc().ContinueWith(task =>
+        {
+            if(task.Exception is not null)
+            {
+                Environment.FailFast(null, task.Exception);
+            }
+            
+            Qt.qcoreapplication_exit(handle);
+        });
         application.Run();
     }
 }

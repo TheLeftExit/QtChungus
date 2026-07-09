@@ -10,9 +10,9 @@ public readonly record struct QLabel(QObject Handle) : IWidget
         set => Handle.SetProperty("geometry", value);
     }
 
-    public string Text
+    public string? Text
     {
-        get => Handle.GetProperty<string>("text");
+        get => Handle.GetProperty<string?>("text");
         set => Handle.SetProperty("text", value);
     }
 }

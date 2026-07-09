@@ -16,7 +16,7 @@ public class PropertyBinding<TViewModel, TWidget, TValue> : ISignalHandler<TView
 
     public PropertyBinding()
     {
-        QVariant.EnsureSupportedType<TValue>();
+        QVariant.GetTypeCodeOrThrow<TValue>();
     }
 
     public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)

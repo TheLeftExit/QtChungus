@@ -3,12 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 
-[StructLayout(LayoutKind.Explicit)]
-public unsafe readonly ref struct QVariant
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public unsafe readonly struct QVariant
 {
-    [FieldOffset(0)]
     public readonly TypeCode Type;
-    [FieldOffset(sizeof(long))]
     public readonly void* Data;
 
     public QVariant(TypeCode type, void* data)
@@ -42,13 +40,13 @@ public unsafe readonly ref struct QVariant
     /*
     Checklist for new types:
     - TypeCode value
-    - Entries in _supportedTypes, Create<T>, Get<T>, Dispose()
+    - Entries in SupportedTypes, Create<T>, Get<T>, Dispose()
     - API: Constructor, GetX, optionally FreeX
-    - C++: entries in EncodeQVariant, DecodeQVariant
+    - C++: entries in CVariant
     */
 
     // https://doc.qt.io/qt-6/qmetatype.html#Type-enum
-    public enum TypeCode : long
+    public enum TypeCode : int
     {
         UnknownType = 0,
         Bool = 1,
@@ -57,16 +55,16 @@ public unsafe readonly ref struct QVariant
         QSize = 21,
         VoidStar = 31
     }
-    private static readonly HashSet<Type> _supportedTypes = [
-        typeof(bool),
-        typeof(string),
-        typeof(Rectangle),
-        typeof(Size),
-        typeof(nint)
-    ];
-    public static void EnsureSupportedType<T>()
+    private static readonly Dictionary<Type, TypeCode> SupportedTypes = new() {
+        {typeof(bool), TypeCode.Bool},
+        {typeof(string), TypeCode.QString},
+        {typeof(Rectangle), TypeCode.QRect},
+        {typeof(Size), TypeCode.QSize},
+        {typeof(nint), TypeCode.VoidStar}
+    };
+    public static TypeCode GetTypeCodeOrThrow<T>()
     {
-        if (!_supportedTypes.Contains(typeof(T))) throw new NotImplementedException();
+        return SupportedTypes[typeof(T)];
     }
 
     public static QVariant Create<T>(T value)
@@ -90,7 +88,8 @@ public unsafe readonly ref struct QVariant
             _ => throw new NotImplementedException()
         };
     }
-    public void Dispose()
+    
+    public void Dispose() // Only necessary for QObject.GetProperty
     {
         switch (Type)
         {
@@ -102,7 +101,7 @@ public unsafe readonly ref struct QVariant
             default: throw new InvalidOperationException();
         }
     }
-
+    
     // Bool (no Free)
     public QVariant(bool value)
     {

@@ -3,7 +3,7 @@
 #include <QMetaType>
 #include <QMetaProperty>
 
-#include "Variant.h"
+#include "CVariant.cxx"
 
 const QMetaProperty FindProperty(QObject *target, char *name)
 {
@@ -14,13 +14,17 @@ const QMetaProperty FindProperty(QObject *target, char *name)
 
 extern "C"
 {
-    QManagedVariant GetPropertyCore(QObject *target, char *name)
+    CVariantPtr GetPropertyCore(QObject *target, char *name)
     {
-        return EncodeQVariant(FindProperty(target, name).read(target));
+        CVariant result = CVariant(FindProperty(target, name).read(target));
+        // Exception case where C# must take ownership of the buffer.
+        void *buffer = malloc(CVARIANT_SIZE);
+        memcpy(buffer, result, CVARIANT_SIZE);
+        return buffer;
     }
 
-    void SetPropertyCore(QObject *target, char *name, QManagedVariant value)
+    void SetPropertyCore(QObject *target, char *name, CVariantPtr value)
     {
-        FindProperty(target, name).write(target, DecodeQVariant(value));
+        FindProperty(target, name).write(target, CVariant(value));
     }
 }
