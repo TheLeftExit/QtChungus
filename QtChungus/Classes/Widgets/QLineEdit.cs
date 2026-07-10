@@ -1,6 +1,6 @@
 using System.Drawing;
 
-public readonly record struct QLineEdit(QObject Handle) : IWidget
+public readonly record struct QLineEdit(QObject Handle) : IQWidget
 {
     public static string ClassName => "QLineEdit";
 

@@ -8,32 +8,29 @@ Console.WriteLine("Hello world!");
 
 Application.Run(async () =>
 {
-    var builder = new ViewBuilder<MyViewModel>(x =>
+    var builder = new QMainWindowBuilder<MyViewModel>(x =>
     {
         x.Size = new(220, 300);
         x.Text = "QtChungus";
     });
-    var button = builder.AddWidget<QPushButton>(x =>
+    var rootLayout = builder.UseLayout<QVBoxLayout>();
+    var row1Layout = rootLayout.AddLayout<QHBoxLayout>();
+    var button = row1Layout.AddWidget<QPushButton>(x =>
     {
-        x.Bounds = new(10, 10, 120, 30);
         x.Text = "Click me!";
     });
-    var textEdit = builder.AddWidget<QLineEdit>(x =>
+    var textEdit = row1Layout.AddWidget<QLineEdit>(x =>
     {
-        x.Bounds = new(10, 50, 120, 30);
         x.PlaceholderText = "Type something!";
     });
-    var treeView = builder.AddWidget<QTreeView>(x =>
-    {
-        x.Bounds = new(10, 90, 200, 200);
-    });
+    var treeView = rootLayout.AddWidget<QTreeView>();
     builder.SetBinding(button, x => x.Text, x => x.ButtonText);
     builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
     builder.SetModel(treeView, x => x.List, [
         new QModelColumn<MyClass, string?>(x => x.Value),
         new QModelColumn<MyClass, bool>(x => x.Checked)
-        ]);
+    ]);
     var view = builder.Build();
 
     await view.ShowAsync(new MyViewModel());
@@ -57,6 +54,7 @@ public class MyViewModel : BindableBase
     public void Fire()
     {
         ButtonText = $"Clicked {++counter} times";
+        //throw new NotImplementedException();
     }
 
     public MyClass[] List { get; } = Enumerable.Range(0, 5).Select(x => new MyClass { Value = x.ToString() }).ToArray();

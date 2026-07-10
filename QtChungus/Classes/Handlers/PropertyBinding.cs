@@ -3,7 +3,7 @@ using System.Reflection;
 
 public class PropertyBinding<TViewModel, TWidget, TValue> : ISignalHandler<TViewModel>
     where TViewModel : class
-    where TWidget : struct, IWidget
+    where TWidget : struct, IQWidget
 {
     public required QObject WidgetHandle { private get; init; }
     public required string? SignalName { private get; init; }
@@ -63,12 +63,12 @@ public static partial class ViewBuilderExtensions
 {
     public static void SetBinding<TViewModel, TWidget, TValue>(
         this IViewBuilder<TViewModel> builder,
-        WidgetHandle<TWidget> widget,
+        QWidgetHandle<TWidget> widget,
         Expression<Func<TWidget, TValue>> widgetPropertySelector,
         Expression<Func<TViewModel, TValue>> viewModelPropertySelector
     )
         where TViewModel : class
-        where TWidget : struct, IWidget
+        where TWidget : struct, IQWidget
     {
         if (!ExpressionHelper.TryParseProperty(widgetPropertySelector, out var controlProperty))
         {

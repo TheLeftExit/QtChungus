@@ -1,6 +1,6 @@
 using System.Drawing;
 
-public readonly record struct QPushButton(QObject Handle) : IWidget
+public readonly record struct QPushButton(QObject Handle) : IQWidget
 {
     public static string ClassName => "QPushButton";
 

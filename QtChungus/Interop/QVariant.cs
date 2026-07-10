@@ -88,7 +88,7 @@ public unsafe readonly struct QVariant
             _ => throw new NotImplementedException()
         };
     }
-    
+
     public void Dispose() // Only necessary for QObject.GetProperty
     {
         switch (Type)
@@ -101,7 +101,7 @@ public unsafe readonly struct QVariant
             default: throw new InvalidOperationException();
         }
     }
-    
+
     // Bool (no Free)
     public QVariant(bool value)
     {

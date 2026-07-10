@@ -3,7 +3,7 @@ using System.Reflection;
 
 public class CommandBinding<TViewModel, TWidget> : ISignalHandler<TViewModel>
     where TViewModel : class
-    where TWidget : struct, IWidget
+    where TWidget : struct, IQWidget
 {
     public required QObject WidgetHandle { private get; init; }
     public required string SignalName { private get; init; }
@@ -24,12 +24,12 @@ public static partial class ViewBuilderExtensions
 {
     public static void SetCommand<TViewModel, TWidget>(
         this IViewBuilder<TViewModel> builder,
-        WidgetHandle<TWidget> widget,
+        QWidgetHandle<TWidget> widget,
         Expression<Func<TWidget, Action>> widgetCommandSelector,
         Expression<Func<TViewModel, Action>> viewModelCommandSelector
     )
     where TViewModel : class
-    where TWidget : struct, IWidget
+    where TWidget : struct, IQWidget
     {
         if (!ExpressionHelper.TryParseMethod(widgetCommandSelector, out var controlCommand))
         {

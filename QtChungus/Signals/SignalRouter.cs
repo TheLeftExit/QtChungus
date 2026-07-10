@@ -13,15 +13,15 @@ public unsafe partial class SignalRouter
     [UnmanagedCallersOnly(EntryPoint = "RouteSignalCore")]
     private static void RouteSignalCore(QObject sender, byte* senderName, byte* signalName)
     {
-        for(var nextSender = sender; nextSender.Handle != 0; nextSender = GetParent(nextSender))
+        for (var nextSender = sender; nextSender.Handle != 0; nextSender = GetParent(nextSender))
         {
-            if(_subscribers.TryGetValue(nextSender, out var subscribers))
+            if (_subscribers.TryGetValue(nextSender, out var subscribers))
             {
                 var signalNameUtf8 = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(signalName);
                 Span<char> signalNameUtf16 = stackalloc char[Encoding.UTF8.GetCharCount(signalNameUtf8)];
                 Encoding.UTF8.GetChars(signalNameUtf8, signalNameUtf16);
                 //Console.WriteLine(signalNameUtf16);
-                foreach(var subscriber in subscribers)
+                foreach (var subscriber in subscribers)
                 {
                     subscriber.ProcessSignal(sender, signalNameUtf16);
                 }
@@ -32,7 +32,7 @@ public unsafe partial class SignalRouter
     }
     public static IDisposable Subscribe(QObject target, ISignalReceiver signalReceiver)
     {
-        if(!_subscribers.TryGetValue(target, out var subscribers))
+        if (!_subscribers.TryGetValue(target, out var subscribers))
         {
             subscribers = _subscribers[target] = new();
         }
@@ -50,7 +50,12 @@ public unsafe partial class SignalRouter
         }
         public void Dispose()
         {
-            _subscribers[_target].Remove(_signalReceiver);
+            var list = _subscribers[_target];
+            list.Remove(_signalReceiver);
+            if (list.Count == 0)
+            {
+                _subscribers.Remove(_target);
+            }
         }
     }
 

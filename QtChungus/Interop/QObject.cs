@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 public readonly unsafe partial record struct QObject(nint Handle)
 {
     [LibraryImport(Qt.libraryName)]
-    public static partial QObject CreateWidget([MarshalAs(UnmanagedType.LPUTF8Str)] string name, QObject parent);
+    public static partial QObject CreateWidgetCore([MarshalAs(UnmanagedType.LPUTF8Str)] string name, QObject parent);
 
     [LibraryImport(Qt.libraryName)]
     private static partial QVariant* GetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);

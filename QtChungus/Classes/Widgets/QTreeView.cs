@@ -1,10 +1,10 @@
 using System.Drawing;
 
-public readonly record struct QTreeView(QObject Handle) : IWidget
+public readonly record struct QTreeView(QObject Handle) : IQWidget
 {
     public static string ClassName => "QTreeView";
 
-    void IWidget.SetDefaults()
+    void IQWidget.SetDefaults()
     {
         Handle.SetProperty("rootIsDecorated", false);
     }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 public class ListModelBinding<TViewModel, TWidget, TRow> : ISignalHandler<TViewModel>
     where TViewModel : class
-    where TWidget : struct, IWidget
+    where TWidget : struct, IQWidget
     where TRow : class
 {
     public required QObject WidgetHandle { private get; init; }
@@ -21,11 +21,11 @@ public class ListModelBinding<TViewModel, TWidget, TRow> : ISignalHandler<TViewM
         if (propertyName is not null && propertyName != ViewModelPropertyName) return;
 
         var oldNativeModel = Qt.qabstractitemview_model(WidgetHandle);
-        var oldModel = oldNativeModel.Handle != 0 ? QModel.FromHandle(oldNativeModel.Handle) : null;
+        var oldModel = oldNativeModel.Handle != 0 ? QAbstractItemModel.FromHandle(oldNativeModel.Handle) : null;
 
         var newList = ViewModelGetMethod(sender);
         var newModel = new QListModel<TRow>(newList, ModelColumns);
-        Qt.qabstractitemview_setmodel(WidgetHandle, newModel.GetHandle());
+        Qt.qabstractitemview_setmodel(WidgetHandle, newModel.Handle);
 
         oldModel?.Dispose();
     }
@@ -35,12 +35,12 @@ public static partial class ViewBuilderExtensions
 {
     public static void SetModel<TViewModel, TWidget, TRow>(
         this IViewBuilder<TViewModel> builder,
-        WidgetHandle<TWidget> widget,
+        QWidgetHandle<TWidget> widget,
         Expression<Func<TViewModel, IList<TRow>>> viewModelPropertySelector,
         IQModelColumn<TRow>[] columns
     )
         where TViewModel : class
-        where TWidget : struct, IWidget
+        where TWidget : struct, IQWidget
         where TRow: class
     {
         if (!ExpressionHelper.TryParseProperty(viewModelPropertySelector, out var viewModelProperty))

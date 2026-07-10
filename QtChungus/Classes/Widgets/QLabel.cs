@@ -1,6 +1,6 @@
 using System.Drawing;
 
-public readonly record struct QLabel(QObject Handle) : IWidget
+public readonly record struct QLabel(QObject Handle) : IQWidget
 {
     public static string ClassName => "QLabel";
 

@@ -1,6 +1,6 @@
 using System.Drawing;
 
-public readonly record struct QMainWindow(QObject Handle) : IWidget
+public readonly record struct QMainWindow(QObject Handle) : IQWidget
 {
     public static string ClassName => throw new NotSupportedException();
 
