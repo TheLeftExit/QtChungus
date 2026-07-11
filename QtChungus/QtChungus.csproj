@@ -11,13 +11,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <!--
     <LinkerArg Include="-Wl,-lQt6Widgets" />
     <LinkerArg Include="-Wl,-lQt6Gui" />
     <LinkerArg Include="-Wl,-lQt6Core" />
     <LinkerArg Include="-lstdc++" />
 
+    
     <DirectPInvoke Include="libQtGlue" />
     <NativeLibrary Include="../bld/libQtGlue.a" />
+    -->
+
+    <Content Include="..\bld\libQtGlue.so">
+      <Link>libQtGlue.so</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
   </ItemGroup>
 
 </Project>

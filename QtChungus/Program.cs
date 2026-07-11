@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 
 Console.WriteLine("Hello world!");
 
+CReversePInvokeShim.Initialize();
+
 Application.Run(async () =>
 {
     var builder = new QMainWindowBuilder<MyViewModel>(x =>
@@ -27,10 +29,12 @@ Application.Run(async () =>
     builder.SetBinding(button, x => x.Text, x => x.ButtonText);
     builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
+    
     builder.SetModel(treeView, x => x.List, [
         new QModelColumn<MyClass, string?>(x => x.Value),
         new QModelColumn<MyClass, bool>(x => x.Checked)
     ]);
+    
     var view = builder.Build();
 
     await view.ShowAsync(new MyViewModel());

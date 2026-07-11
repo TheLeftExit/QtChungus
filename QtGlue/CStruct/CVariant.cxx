@@ -24,6 +24,13 @@ struct CVariant : public CStruct<CVariantPtr>
         return Get<void *>(sizeof(qint32));
     }
 
+    CVariantPtr CopyToHeap()
+    {
+        CVariantPtr result = malloc(CVARIANT_SIZE);
+        memcpy(result, type(), CVARIANT_SIZE);
+        return result;
+    }
+
     CVariant(QVariant variant) : CStruct(CVARIANT_SIZE)
     {
         *type() = static_cast<QMetaType::Type>(variant.typeId());

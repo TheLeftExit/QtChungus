@@ -18,9 +18,7 @@ extern "C"
     {
         CVariant result = CVariant(FindProperty(target, name).read(target));
         // Exception case where C# must take ownership of the buffer.
-        void *buffer = malloc(CVARIANT_SIZE);
-        memcpy(buffer, result, CVARIANT_SIZE);
-        return buffer;
+        return result.CopyToHeap();
     }
 
     void SetPropertyCore(QObject *target, char *name, CVariantPtr value)

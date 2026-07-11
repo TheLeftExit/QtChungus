@@ -13,7 +13,7 @@ include_directories(
     CStruct
 )
 
-qt_add_library(QtGlue STATIC
+qt_add_library(QtGlue
     Classes.cxx
     Properties.cxx
     SignalRouter.cxx
@@ -22,6 +22,7 @@ qt_add_library(QtGlue STATIC
     CStruct/Base.cxx
     CStruct/CVariant.cxx
     CStruct/CModelIndex.cxx
+    SharedLibShim.cxx
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

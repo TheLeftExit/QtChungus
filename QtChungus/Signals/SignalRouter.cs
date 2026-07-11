@@ -6,12 +6,12 @@ public interface ISignalReceiver
     void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName);
 }
 
-public unsafe partial class SignalRouter
+public unsafe partial class SignalRouter : ICReversePInvokeShimInitializer
 {
     private static Dictionary<QObject, List<ISignalReceiver>> _subscribers = new();
 
     [UnmanagedCallersOnly(EntryPoint = "RouteSignalCore")]
-    private static void RouteSignalCore(QObject sender, byte* senderName, byte* signalName)
+    private static void RouteSignalCore(QObject sender, byte* signalName)
     {
         for (var nextSender = sender; nextSender.Handle != 0; nextSender = GetParent(nextSender))
         {
@@ -66,9 +66,14 @@ public unsafe partial class SignalRouter
     public static partial void ConnectSignal(QObject target, string signalName);
     [LibraryImport(Qt.libraryName)]
     public static partial void ConnectEvents(QObject target);
+
+    static void ICReversePInvokeShimInitializer.Initialize(ref CReversePInvokeShim shim)
+    {
+        shim.RouteSignalCore = &RouteSignalCore;
+    }
 }
 
-public partial class QtSynchronizationContext : SynchronizationContext
+public partial class QtSynchronizationContext : SynchronizationContext, ICReversePInvokeShimInitializer
 {
     public override void Post(SendOrPostCallback d, object? state)
     {
@@ -86,5 +91,10 @@ public partial class QtSynchronizationContext : SynchronizationContext
         ((SendOrPostCallback)callbackGcHandle.Target!)(stateGcHandle.Target!);
         callbackGcHandle.Free();
         stateGcHandle.Free();
+    }
+
+    unsafe static void ICReversePInvokeShimInitializer.Initialize(ref CReversePInvokeShim shim)
+    {
+        shim.InvokeCallbackCore = &InvokeCallbackCore;
     }
 }
