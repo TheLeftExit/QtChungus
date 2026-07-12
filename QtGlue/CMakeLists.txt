@@ -13,7 +13,17 @@ include_directories(
     CStruct
 )
 
+option(QTGLUE_SHARED OFF)
+
+if(QTGLUE_SHARED)
+    set(QTGLUE_TYPE SHARED)
+    set(QTGLUE_SHARED_SHIM SharedLibShim.cxx)
+else()
+    set(QTGLUE_TYPE STATIC)
+endif()
+
 qt_add_library(QtGlue
+    ${QTGLUE_TYPE}
     Classes.cxx
     Properties.cxx
     SignalRouter.cxx
@@ -22,7 +32,8 @@ qt_add_library(QtGlue
     CStruct/Base.cxx
     CStruct/CVariant.cxx
     CStruct/CModelIndex.cxx
-    SharedLibShim.cxx
+    
+    ${QTGLUE_SHARED_SHIM}
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

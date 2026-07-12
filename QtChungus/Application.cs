@@ -47,6 +47,10 @@ public partial class Application : IDisposable
     {
         if (State != ApplicationState.NotCreated) throw new InvalidOperationException();
 
+#if QTGLUE_SHARED
+        CReversePInvokeShim.Initialize();
+#endif
+
         _instance = CreateQApplication();
         Instance = this;
         State = ApplicationState.Created;
@@ -83,11 +87,11 @@ public partial class Application : IDisposable
         handle.SetProperty("quitOnLastWindowClosed", false);
         mainFunc().ContinueWith(task =>
         {
-            if(task.Exception is not null)
+            if (task.Exception is not null)
             {
                 Environment.FailFast(null, task.Exception);
             }
-            
+
             Qt.qcoreapplication_exit(handle);
         });
         application.Run();

@@ -6,8 +6,6 @@ using System.Runtime.CompilerServices;
 
 Console.WriteLine("Hello world!");
 
-CReversePInvokeShim.Initialize();
-
 Application.Run(async () =>
 {
     var builder = new QMainWindowBuilder<MyViewModel>(x =>

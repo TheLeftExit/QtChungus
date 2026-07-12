@@ -8,25 +8,33 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <_QtGlueShared>true</_QtGlueShared>
+    <DefineConstants Condition="'$(_QtGlueShared)' == 'true'">$(DefineConstants);QTGLUE_SHARED</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-
-    <!--
+  <ItemGroup Condition="'$(_QtGlueShared)' != 'true'">
     <LinkerArg Include="-Wl,-lQt6Widgets" />
     <LinkerArg Include="-Wl,-lQt6Gui" />
     <LinkerArg Include="-Wl,-lQt6Core" />
     <LinkerArg Include="-lstdc++" />
 
-    
     <DirectPInvoke Include="libQtGlue" />
     <NativeLibrary Include="../bld/libQtGlue.a" />
-    -->
+  </ItemGroup>
 
-    <Content Include="..\bld\libQtGlue.so">
+  <ItemGroup Condition="'$(_QtGlueShared)' == 'true'">
+    <Content Include="../bld/libQtGlue.so">
       <Link>libQtGlue.so</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </Content>
+    </Content>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="rm -rf ../bld" />
+    <Exec Command="cmake -S ../QtGlue -B ../bld -D QTGLUE_SHARED=OFF" Condition="'$(_QtGlueShared)' != 'true'" />
+    <Exec Command="cmake -S ../QtGlue -B ../bld -D QTGLUE_SHARED=ON" Condition="'$(_QtGlueShared)' == 'true'" />
+    <Exec Command="cmake --build ../bld" />
+  </Target>
 
 </Project>
