@@ -1,0 +1,11 @@
+<Project>
+  <ItemGroup>
+    <LinkerArg Include="-Wl,-lQt6Widgets" />
+    <LinkerArg Include="-Wl,-lQt6Gui" />
+    <LinkerArg Include="-Wl,-lQt6Core" />
+    <LinkerArg Include="-lstdc++" />
+
+    <DirectPInvoke Include="libQtGlue" />
+    <NativeLibrary Include="$(MSBuildThisFileDirectory)libQtGlue.a" />
+  </ItemGroup>
+</Project>

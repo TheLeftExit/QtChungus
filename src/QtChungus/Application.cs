@@ -47,9 +47,7 @@ public partial class Application : IDisposable
     {
         if (State != ApplicationState.NotCreated) throw new InvalidOperationException();
 
-#if QTGLUE_SHARED
         CReversePInvokeShim.Initialize();
-#endif
 
         _instance = CreateQApplication();
         Instance = this;

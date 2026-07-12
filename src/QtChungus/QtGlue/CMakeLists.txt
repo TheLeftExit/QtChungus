@@ -17,7 +17,6 @@ option(QTGLUE_SHARED OFF)
 
 if(QTGLUE_SHARED)
     set(QTGLUE_TYPE SHARED)
-    set(QTGLUE_SHARED_SHIM SharedLibShim.cxx)
 else()
     set(QTGLUE_TYPE STATIC)
 endif()
@@ -33,7 +32,7 @@ qt_add_library(QtGlue
     CStruct/CVariant.cxx
     CStruct/CModelIndex.cxx
     
-    ${QTGLUE_SHARED_SHIM}
+    SharedLibShim.cxx
 )
 
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)

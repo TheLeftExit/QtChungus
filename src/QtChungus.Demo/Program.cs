@@ -1,8 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-[assembly: DisableRuntimeMarshalling]
+﻿// See https://aka.ms/new-console-template for more information
+Console.WriteLine("Hello, World!");
 
 Console.WriteLine("Hello world!");
 
@@ -61,23 +58,3 @@ public class MyViewModel : BindableBase
 
     public MyClass[] List { get; } = Enumerable.Range(0, 5).Select(x => new MyClass { Value = x.ToString() }).ToArray();
 }
-
-public class BindableBase : INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler? PropertyChanged;
-    private static readonly ConcurrentDictionary<string, PropertyChangedEventArgs> eventArgsCache = new();
-
-    protected void RaisePropertyChanged(string? propertyName = null)
-    {
-        var args = eventArgsCache.GetOrAdd(propertyName ?? "$null", x => new PropertyChangedEventArgs(x));
-        PropertyChanged?.Invoke(this, args);
-    }
-    protected void SetValue<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return;
-        field = value;
-        RaisePropertyChanged(propertyName);
-    }
-}
-
-

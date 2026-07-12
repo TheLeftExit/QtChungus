@@ -8,7 +8,6 @@ interface ICReversePInvokeShimInitializer
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 unsafe partial struct CReversePInvokeShim
 {
-#if QTGLUE_SHARED
     private static void InitializeFrom<T>(ref CReversePInvokeShim shim) where T : ICReversePInvokeShimInitializer
     {
         T.Initialize(ref shim);
@@ -23,7 +22,6 @@ unsafe partial struct CReversePInvokeShim
         InitializeFrom<QAbstractItemModel>(ref *shimPtr);
         InitializeShim(shimPtr);
     }
-#endif
     public delegate* unmanaged<QObject, byte*, void> RouteSignalCore;
     public delegate* unmanaged<nint, nint, void> InvokeCallbackCore;
     public delegate* unmanaged<nint, CModelIndex*, int> qmodel_rowcount;
