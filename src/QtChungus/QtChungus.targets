@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <!-- Overridable switch to support direct project referencing -->
+    <QtGlueDirectory>$(MSBuildThisFileDirectory)</QtGlueDirectory>
+  </PropertyGroup>
+  <!-- For regular builds, bundle libQtGlue.so -->
+  <Target Name="CopyQtGlue" AfterTargets="Build">
+    <Copy SourceFiles="$(QtGlueDirectory)libQtGlue.so" DestinationFolder="$(OutputPath)" />
+  </Target>
+
+  <!-- For NativeAOT builds, statically link libQtGlue.a
+    (libQtGlue.so will still be copied to the intermediate build folder, but that doesn't affect the publish directory,
+    and I don't think the SDK has a way to differentiate between regular and pre-NativeAOT builds that anyway) -->
+  <ItemGroup>
+    <LinkerArg Include="-Wl,-lQt6Widgets" />
+    <LinkerArg Include="-Wl,-lQt6Gui" />
+    <LinkerArg Include="-Wl,-lQt6Core" />
+    <LinkerArg Include="-lstdc++" />
+
+    <DirectPInvoke Include="libQtGlue" />
+    <NativeLibrary Include="$(QtGlueDirectory)libQtGlue.a" />
+  </ItemGroup>
+</Project>

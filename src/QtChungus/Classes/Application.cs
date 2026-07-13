@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualBasic;
@@ -95,4 +96,3 @@ public partial class Application : IDisposable
         application.Run();
     }
 }
-

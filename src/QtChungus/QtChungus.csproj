@@ -7,38 +7,32 @@
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-    <QtGlueShared>false</QtGlueShared>
-
-    <PackageId Condition="'$(QtGlueShared)' == 'true'">QtChungus.Shared</PackageId>
-    <PackageId Condition="'$(QtGlueShared)' != 'true'">QtChungus.Static</PackageId>
-    <Version>0.7</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="./bld/libQtGlue.so" Condition="'$(QtGlueShared)' == 'true'">
-      <Pack>true</Pack>
-      <PackagePath>runtimes/linux-x64/native</PackagePath>
-    </None>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.DisableRuntimeMarshalling " />
+  </ItemGroup>
 
-    <None Include="./bld/libQtGlue.a" Condition="'$(QtGlueShared)' != 'true'">
+  <!-- NuGet package config -->
+  <PropertyGroup>
+    <PackageId>QtChungus</PackageId>
+    <Version>0.0.1</Version>
+    <Description>QtChungus package for testing and personal development purposes. May be updated without a version bump!</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../QtGlue/bin/libQtGlue.so">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
 
-    <None Include="./QtChungus.Static.props" Condition="'$(QtGlueShared)' != 'true'">
+    <None Include="../QtGlue/bin/libQtGlue.a">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
+
+    <None Include="./QtChungus.targets">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
   </ItemGroup>
-
-  <Target Name="BuildQtGlue" BeforeTargets="GenerateNuspec">
-    <Exec Command="rm -rf ./bld" />
-    <Exec Command="cmake -S ./QtGlue -B ./bld -D QTGLUE_SHARED=OFF"
-      Condition="'$(QtGlueShared)' != 'true'" />
-    <Exec Command="cmake -S ./QtGlue -B ./bld -D QTGLUE_SHARED=ON"
-      Condition="'$(QtGlueShared)' == 'true'" />
-    <Exec Command="cmake --build ./bld" />
-  </Target>
-
 </Project>
