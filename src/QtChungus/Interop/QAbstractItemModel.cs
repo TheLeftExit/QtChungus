@@ -19,75 +19,68 @@ public abstract unsafe partial class QAbstractItemModel : IDisposable, ICReverse
         _handle = CreateModelCore((nint)GCHandle.Alloc(this));
     }
 
-    private static T* CopyToHeap<T>(T value) where T : unmanaged
+    [UnmanagedCallersOnly]
+    private static int qmodel_rowcount(nint managedHandle, CStructPtr<CModelIndex> parent)
     {
-        var pointer = (T*)NativeMemory.Alloc((nuint)sizeof(T));
-        *pointer = value;
-        return pointer;
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_rowcount")]
-    private static int qmodel_rowcount(nint managedHandle, CModelIndex* parent)
-    {
-        return FromHandle(managedHandle).GetRowCount(*parent);
+        return FromHandle(managedHandle).GetRowCount(parent);
     }
     protected abstract int GetRowCount(CModelIndex parent);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_data")]
-    private static QVariant* qmodel_data(nint managedHandle, CModelIndex* index, QtItemDataRole role)
+    [UnmanagedCallersOnly]
+    private static CStructPtr<CVariant> qmodel_data(nint managedHandle, CStructPtr<CModelIndex> index, QtItemDataRole role)
     {
-        return CopyToHeap(FromHandle(managedHandle).GetData(*index, role));
+        return CStructPtr<CVariant>.Alloc(FromHandle(managedHandle).GetData(index, role));
     }
-    protected abstract QVariant GetData(CModelIndex index, QtItemDataRole role);
+    protected abstract CVariant GetData(CModelIndex index, QtItemDataRole role);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_headerdata")]
-    private static QVariant* qmodel_headerdata(nint managedHandle, int section, QtOrientation orientation, QtItemDataRole role)
+    [UnmanagedCallersOnly]
+    private static CStructPtr<CVariant> qmodel_headerdata(nint managedHandle, int section, QtOrientation orientation, QtItemDataRole role)
     {
-        return CopyToHeap(FromHandle(managedHandle).GetHeaderData(section, orientation, role));
+        return CStructPtr<CVariant>.Alloc(FromHandle(managedHandle).GetHeaderData(section, orientation, role));
     }
-    protected abstract QVariant GetHeaderData(int section, QtOrientation orientation, QtItemDataRole role);
+    protected abstract CVariant GetHeaderData(int section, QtOrientation orientation, QtItemDataRole role);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_columncount")]
-    private static int qmodel_columncount(nint managedHandle, CModelIndex* parent)
+    [UnmanagedCallersOnly]
+    private static int qmodel_columncount(nint managedHandle, CStructPtr<CModelIndex> parent)
     {
-        return FromHandle(managedHandle).GetColumnCount(*parent);
+        return FromHandle(managedHandle).GetColumnCount(parent);
     }
     protected abstract int GetColumnCount(CModelIndex parent);
 
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_index")]
-    private static CModelIndex* qmodel_index(nint managedHandle, int row, int column, CModelIndex* parent)
+    [UnmanagedCallersOnly]
+    private static CStructPtr<CModelIndex> qmodel_index(nint managedHandle, int row, int column, CStructPtr<CModelIndex> parent)
     {
-        return CopyToHeap(FromHandle(managedHandle).CreateIndex(row, column, *parent));
+        return CStructPtr<CModelIndex>.Alloc(FromHandle(managedHandle).CreateIndex(row, column, parent));
     }
     protected abstract CModelIndex CreateIndex(int row, int column, CModelIndex parent);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_parent")]
-    private static CModelIndex* qmodel_parent(nint managedHandle, CModelIndex* index)
+    [UnmanagedCallersOnly]
+    private static CStructPtr<CModelIndex> qmodel_parent(nint managedHandle, CStructPtr<CModelIndex> index)
     {
-        return CopyToHeap(FromHandle(managedHandle).GetParent(*index));
+        return CStructPtr<CModelIndex>.Alloc(FromHandle(managedHandle).GetParent(index));
     }
     protected abstract CModelIndex GetParent(CModelIndex index);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_flags")]
-    private static QtItemFlag qmodel_flags(nint managedHandle, CModelIndex* index)
+    [UnmanagedCallersOnly]
+    private static QtItemFlag qmodel_flags(nint managedHandle, CStructPtr<CModelIndex> index)
     {
-        return FromHandle(managedHandle).GetFlags(*index);
+        return FromHandle(managedHandle).GetFlags(index);
     }
     protected abstract QtItemFlag GetFlags(CModelIndex index);
 
-    [UnmanagedCallersOnly(EntryPoint = "qmodel_setdata")]
-    private static int qmodel_setdata(nint managedHandle, CModelIndex* index, QVariant* value, QtItemDataRole role)
+    [UnmanagedCallersOnly]
+    private static int qmodel_setdata(nint managedHandle, CStructPtr<CModelIndex> index, CStructPtr<CVariant> value, QtItemDataRole role)
     {
-        return FromHandle(managedHandle).TrySetData(*index, *value, role) ? 1 : 0;
+        return FromHandle(managedHandle).TrySetData(index, value, role) ? 1 : 0;
     }
-    protected abstract bool TrySetData(CModelIndex index, QVariant value, QtItemDataRole role);
+    protected abstract bool TrySetData(CModelIndex index, CVariant value, QtItemDataRole role);
 
     [LibraryImport(Qt.libraryName)]
-    private static partial void EmitDataChangedCore(QObject model, CModelIndex* topLeft, CModelIndex* bottomRight);
+    private static partial void EmitDataChangedCore(QObject model, CStructPtr<CModelIndex> topLeft, CStructPtr<CModelIndex> bottomRight);
     protected void EmitDataChanged(CModelIndex topLeft, CModelIndex bottomRight)
     {
-        EmitDataChangedCore(_handle, CopyToHeap(topLeft), CopyToHeap(bottomRight));
+        EmitDataChangedCore(_handle, CStructPtr<CModelIndex>.Alloc(topLeft), CStructPtr<CModelIndex>.Alloc(bottomRight));
     }
 
     public virtual void Dispose()
@@ -132,66 +125,3 @@ public struct CModelIndex
     }
 }
 
-// Enum definitions ripped from F12-ing them in the C++ editor in VS Code
-
-public enum QtItemDataRole : int
-{
-    DisplayRole = 0,
-    DecorationRole = 1,
-    EditRole = 2,
-    ToolTipRole = 3,
-    StatusTipRole = 4,
-    WhatsThisRole = 5,
-    // Metadata
-    FontRole = 6,
-    TextAlignmentRole = 7,
-    BackgroundRole = 8,
-    ForegroundRole = 9,
-    CheckStateRole = 10,
-    // Accessibility
-    AccessibleTextRole = 11,
-    AccessibleDescriptionRole = 12,
-    // More general purpose
-    SizeHintRole = 13,
-    InitialSortOrderRole = 14,
-    // Internal UiLib roles. Start worrying when public roles go that high.
-    DisplayPropertyRole = 27,
-    DecorationPropertyRole = 28,
-    ToolTipPropertyRole = 29,
-    StatusTipPropertyRole = 30,
-    WhatsThisPropertyRole = 31,
-    // QRangeModel support for QML's required property var modelData
-    RangeModelDataRole = 40,
-    // QRangeModelAdapter support for accessing entire multi-role objects
-    RangeModelAdapterRole = 41,
-
-    // Reserved
-    UserRole = 0x0100,
-
-    // Used by Qt models
-    StandardItemFlagsRole = UserRole - 1,  // QStandardItemModel
-    FileInfoRole = UserRole - 4,           // QFileSystemModel
-    RemoteObjectsCacheRole = UserRole - 1, // QtRemoteObjects::QAbstractItemModelReplica
-};
-
-public enum QtOrientation : int
-{
-    Horizontal = 0x1,
-    Vertical = 0x2
-};
-
-public enum QtItemFlag : int
-{
-    NoItemFlags = 0,
-    ItemIsSelectable = 1,
-    ItemIsEditable = 2,
-    ItemIsDragEnabled = 4,
-    ItemIsDropEnabled = 8,
-    ItemIsUserCheckable = 16,
-    ItemIsEnabled = 32,
-    ItemIsAutoTristate = 64,
-    ItemNeverHasChildren = 128,
-    ItemIsUserTristate = 256,
-
-    Default = ItemIsSelectable | ItemIsEnabled
-};

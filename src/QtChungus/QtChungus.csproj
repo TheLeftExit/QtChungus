@@ -20,16 +20,10 @@
     <Description>QtChungus package for testing and personal development purposes. May be updated without a version bump!</Description>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../QtGlue/bin/libQtGlue.so">
+    <None Include="../QtGlue/**">
       <Pack>true</Pack>
-      <PackagePath>build</PackagePath>
+      <PackagePath>tools/cmake/</PackagePath>
     </None>
-
-    <None Include="../QtGlue/bin/libQtGlue.a">
-      <Pack>true</Pack>
-      <PackagePath>build</PackagePath>
-    </None>
-
     <None Include="./QtChungus.targets">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>

@@ -2,8 +2,8 @@
 {
     var builder = new QMainWindowBuilder<MyViewModel>(x =>
     {
-        x.Size = new(220, 300);
-        x.Text = "QtChungus";
+        x.Size = new(500, 300);
+        x.WindowTitle = "QtChungus Demo Application";
     });
     var rootLayout = builder.UseLayout<QVBoxLayout>();
     var row1Layout = rootLayout.AddLayout<QHBoxLayout>();

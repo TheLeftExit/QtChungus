@@ -10,9 +10,9 @@ public readonly record struct QMainWindow(QObject Handle) : IQWidget
         set => Handle.SetProperty("size", value);
     }
 
-    public string Text
+    public string WindowTitle
     {
-        get => Handle.GetProperty<string>("text");
-        set => Handle.SetProperty("text", value);
+        get => Handle.GetProperty<string>("windowTitle");
+        set => Handle.SetProperty("windowTitle", value);
     }
 }

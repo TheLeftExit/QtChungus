@@ -1,11 +1,39 @@
 <Project>
   <PropertyGroup>
-    <!-- Overridable switch to support direct project referencing -->
-    <QtGlueDirectory>$(MSBuildThisFileDirectory)</QtGlueDirectory>
+      <!-- Overridable switch to support direct project referencing -->
+      <QtGlueSources>$(MSBuildThisFileDirectory)../tools/cmake/</QtGlueSources>
+      <QtGlueBuildFiles>$(BaseIntermediateOutputPath)libQtGlueBuild/</QtGlueBuildFiles>
+      <QtGlueLibraryFiles>$(BaseIntermediateOutputPath)libQtGlueBin/</QtGlueLibraryFiles>
+      <QtGlueStatic>libQtGlue.a</QtGlueStatic>
+      <QtGlueShared>libQtGlue.so</QtGlueShared>
   </PropertyGroup>
+
+  <Target Name="PrepareBuildQtGlue">
+    <ItemGroup>
+      <QtGlueSourceFiles Include="$(QtGlueSources)Classes.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)CMakeLists.txt" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)Properties.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)QModel.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)SharedLibShim.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)SignalRouter.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)CStruct/Base.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)CStruct/CModelIndex.cxx" />
+      <QtGlueSourceFiles Include="$(QtGlueSources)CStruct/CVariant.cxx" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BuildQtGlue" DependsOnTargets="PrepareBuildQtGlue" BeforeTargets="Build" Inputs="@(QtGlueSourceFiles)" Outputs="$(QtGlueLibraryFiles)$(QtGlueStatic);$(QtGlueLibraryFiles)$(QtGlueShared)">
+    <Exec Command="cmake -S $(QtGlueSources) -B $(QtGlueBuildFiles) -D QTGLUE_SHARED=OFF" />
+    <Exec Command="cmake --build $(QtGlueBuildFiles)" />
+    <Move SourceFiles="$(QtGlueBuildFiles)$(QtGlueStatic)" DestinationFolder="$(QtGlueLibraryFiles)" />
+
+    <Exec Command="cmake -S $(QtGlueSources) -B $(QtGlueBuildFiles) -D QTGLUE_SHARED=ON" />
+    <Exec Command="cmake --build $(QtGlueBuildFiles)" />
+    <Move SourceFiles="$(QtGlueBuildFiles)$(QtGlueShared)" DestinationFolder="$(QtGlueLibraryFiles)" />
+  </Target>
   <!-- For regular builds, bundle libQtGlue.so -->
   <Target Name="CopyQtGlue" AfterTargets="Build">
-    <Copy SourceFiles="$(QtGlueDirectory)libQtGlue.so" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(QtGlueLibraryFiles)libQtGlue.so" DestinationFolder="$(OutputPath)" />
   </Target>
 
   <!-- For NativeAOT builds, statically link libQtGlue.a
@@ -18,6 +46,6 @@
     <LinkerArg Include="-lstdc++" />
 
     <DirectPInvoke Include="libQtGlue" />
-    <NativeLibrary Include="$(QtGlueDirectory)libQtGlue.a" />
+    <NativeLibrary Include="$(QtGlueLibraryFiles)$(QtGlueStatic)" />
   </ItemGroup>
 </Project>

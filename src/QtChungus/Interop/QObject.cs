@@ -10,21 +10,22 @@ public readonly unsafe partial record struct QObject(nint Handle)
     public static partial QObject CreateWidgetCore([MarshalAs(UnmanagedType.LPUTF8Str)] string name, QObject parent);
 
     [LibraryImport(Qt.libraryName)]
-    private static partial QVariant* GetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+    private static partial CStructPtr<CVariant> GetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
     public T GetProperty<T>(string propertyName)
     {
-        var variant = *GetPropertyCore(this, propertyName);
-        var result = variant.Get<T>();
-        variant.Dispose(); // Exception : C# must take ownership of the buffer, since it's a one-way C++ to C# transfer
+        // Exception: C# must take ownership of CVariant and its buffer, since it's a one-way C++ to C# transfer
+        var pointer = GetPropertyCore(this, propertyName);
+        var result = pointer.Target.Get<T>();
+        pointer.Target.Dispose();
+        pointer.Free();
         return result;
     }
 
     [LibraryImport(Qt.libraryName)]
-    private static partial void SetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, QVariant* value);
+    private static partial void SetPropertyCore(QObject target, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, CStructPtr<CVariant> value);
     public void SetProperty<T>(string propertyName, T value)
     {
-        var variantPtr = (QVariant*)NativeMemory.Alloc((nuint)sizeof(QVariant));
-        *variantPtr = QVariant.Create(value);
-        SetPropertyCore(this, propertyName, variantPtr);
+        var pointer = CStructPtr<CVariant>.Alloc(CVariant.Create(value));
+        SetPropertyCore(this, propertyName, pointer);
     }
 }

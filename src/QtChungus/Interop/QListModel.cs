@@ -6,11 +6,11 @@ public class QModelColumn<TRow, TValue> : IQModelColumn<TRow>
     private readonly string _caption;
     private readonly ViewModelGetMethod<TRow, TValue> _getMethod;
     private readonly ViewModelSetMethod<TRow, TValue>? _setMethod;
-    private readonly QVariant.TypeCode _type;
+    private readonly CVariant.TypeCode _type;
 
     public QModelColumn(Expression<Func<TRow, TValue>> accessor, string? caption = null)
     {
-        _type = QVariant.GetTypeCodeOrThrow<TValue>();
+        _type = CVariant.GetTypeCodeOrThrow<TValue>();
         if (!ExpressionHelper.TryParseProperty(accessor, out var propertyInfo))
         {
             throw new NotSupportedException();
@@ -20,20 +20,20 @@ public class QModelColumn<TRow, TValue> : IQModelColumn<TRow>
         _setMethod = propertyInfo.SetMethod?.CreateDelegate<ViewModelSetMethod<TRow, TValue>>();
     }
 
-    QVariant IQModelColumn<TRow>.Caption => new(_caption);
-    QVariant IQModelColumn<TRow>.GetValue(TRow owner) => QVariant.Create(_getMethod(owner));
+    CVariant IQModelColumn<TRow>.Caption => new(_caption);
+    CVariant IQModelColumn<TRow>.GetValue(TRow owner) => CVariant.Create(_getMethod(owner));
     bool IQModelColumn<TRow>.Editable => _setMethod is not null;
-    void IQModelColumn<TRow>.SetValue(TRow owner, QVariant value) => _setMethod!(owner, value.Get<TValue>());
-    QVariant.TypeCode IQModelColumn<TRow>.Type => _type;
+    void IQModelColumn<TRow>.SetValue(TRow owner, CVariant value) => _setMethod!(owner, value.Get<TValue>());
+    CVariant.TypeCode IQModelColumn<TRow>.Type => _type;
 }
 
 public interface IQModelColumn<T> where T : class
 {
-    QVariant Caption { get; }
-    QVariant GetValue(T owner);
+    CVariant Caption { get; }
+    CVariant GetValue(T owner);
     bool Editable { get; }
-    void SetValue(T owner, QVariant value);
-    QVariant.TypeCode Type { get; }
+    void SetValue(T owner, CVariant value);
+    CVariant.TypeCode Type { get; }
 }
 
 public partial class QListModel<T> : QAbstractItemModel where T : class
@@ -58,7 +58,7 @@ public partial class QListModel<T> : QAbstractItemModel where T : class
         return _columns.Length;
     }
 
-    protected override QVariant GetData(CModelIndex index, QtItemDataRole role)
+    protected override CVariant GetData(CModelIndex index, QtItemDataRole role)
     {
         if (role is not QtItemDataRole.DisplayRole and not QtItemDataRole.EditRole) return new();
         return _columns[index.Column].GetValue(_list[index.Row]);
@@ -74,7 +74,7 @@ public partial class QListModel<T> : QAbstractItemModel where T : class
         return result;
     }
 
-    protected override QVariant GetHeaderData(int section, QtOrientation orientation, QtItemDataRole role)
+    protected override CVariant GetHeaderData(int section, QtOrientation orientation, QtItemDataRole role)
     {
         if (role is not QtItemDataRole.DisplayRole) return new();
         return _columns[section].Caption;
@@ -94,7 +94,7 @@ public partial class QListModel<T> : QAbstractItemModel where T : class
         return _list.Count;
     }
 
-    protected override bool TrySetData(CModelIndex index, QVariant value, QtItemDataRole role)
+    protected override bool TrySetData(CModelIndex index, CVariant value, QtItemDataRole role)
     {
         var column = _columns[index.Column];
         if (!column.Editable)

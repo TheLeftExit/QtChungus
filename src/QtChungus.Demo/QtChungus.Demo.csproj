@@ -15,6 +15,6 @@
   <Import Project="../QtChungus/QtChungus.targets" Condition="$(UsePackage) != 'true'" />
 
   <PropertyGroup>
-    <QtGlueDirectory Condition="$(UsePackage) != 'true'">../QtGlue/bin/</QtGlueDirectory>
+    <QtGlueSources Condition="$(UsePackage) != 'true'">../QtGlue/</QtGlueSources>
   </PropertyGroup>
 </Project>

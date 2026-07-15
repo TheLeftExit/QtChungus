@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public unsafe readonly struct QVariant
+public unsafe readonly struct CVariant
 {
     public readonly TypeCode Type;
     public readonly void* Data;
 
-    public QVariant(TypeCode type, void* data)
+    public CVariant(TypeCode type, void* data)
     {
         Type = type;
         Data = data;
@@ -66,7 +66,7 @@ public unsafe readonly struct QVariant
         return SupportedTypes[typeof(T)];
     }
 
-    public static QVariant Create<T>(T value)
+    public static CVariant Create<T>(T value)
     {
         if (TryCreate<T, bool>(value, out var resultBool)) return new(resultBool);
         if (TryCreate<T, string?>(value, out var resultString)) return new(resultString);
@@ -102,7 +102,7 @@ public unsafe readonly struct QVariant
     }
 
     // Bool (no Free)
-    public QVariant(bool value)
+    public CVariant(bool value)
     {
         Type = TypeCode.Bool;
         Data = value ? (void*)0 : (void*)1;
@@ -113,7 +113,7 @@ public unsafe readonly struct QVariant
     }
 
     // QString
-    public QVariant(string? value)
+    public CVariant(string? value)
     {
         Type = TypeCode.QString;
         Data = (void*)Marshal.StringToHGlobalUni(value);
@@ -128,7 +128,7 @@ public unsafe readonly struct QVariant
     }
 
     // QRectangle
-    public QVariant(Rectangle value)
+    public CVariant(Rectangle value)
     {
         Type = TypeCode.QRect;
         Data = NativeMemory.AllocZeroed(4, sizeof(int));
@@ -146,7 +146,7 @@ public unsafe readonly struct QVariant
     }
 
     // QSize
-    public QVariant(Size value)
+    public CVariant(Size value)
     {
         Type = TypeCode.QSize;
         Data = NativeMemory.AllocZeroed(2, sizeof(int));
@@ -164,7 +164,7 @@ public unsafe readonly struct QVariant
     }
 
     // VoidStar (no Free)
-    public QVariant(nint value)
+    public CVariant(nint value)
     {
         Type = TypeCode.VoidStar;
         Data = (void*)value;
