@@ -9,20 +9,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
-include_directories(
-    CStruct
-)
-
-option(QTGLUE_SHARED OFF)
-
-if(QTGLUE_SHARED)
-    set(QTGLUE_TYPE SHARED)
-else()
-    set(QTGLUE_TYPE STATIC)
-endif()
-
-qt_add_library(QtGlue
-    ${QTGLUE_TYPE}
+qt_add_library(QtGlueObj OBJECT
     Classes.cxx
     Properties.cxx
     SignalRouter.cxx
@@ -35,4 +22,16 @@ qt_add_library(QtGlue
     SharedLibShim.cxx
 )
 
+target_include_directories(QtGlueObj PRIVATE
+    CStruct
+)
+
+target_link_libraries(QtGlueObj PRIVATE Qt6::Widgets)
+set_target_properties(QtGlueObj PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+qt_add_library(QtGlue SHARED $<TARGET_OBJECTS:QtGlueObj>)
+qt_add_library(QtGlueStatic STATIC $<TARGET_OBJECTS:QtGlueObj>)
+
 target_link_libraries(QtGlue PRIVATE Qt6::Widgets)
+target_link_libraries(QtGlueStatic PRIVATE Qt6::Widgets)
+set_target_properties(QtGlueStatic PROPERTIES OUTPUT_NAME QtGlue)
