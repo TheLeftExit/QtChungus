@@ -1,31 +1,38 @@
-﻿Application.Run(async () =>
+﻿using System.Drawing;
+using QtChungus;
+
+Application.Run(async () =>
 {
-    var builder = new QMainWindowBuilder<MyViewModel>(x =>
+    var mainWindow = QMainWindow.Create(x =>
     {
         x.Size = new(500, 300);
-        x.WindowTitle = "QtChungus Demo Application";
+#if DEBUG
+        x.WindowTitle = "QtChungus.Demo (DEBUG)";
+#else
+        x.WindowTitle = "QtChungus.Demo (RELEASE)";
+#endif
     });
-    var rootLayout = builder.UseLayout<QVBoxLayout>();
+    var rootLayout = mainWindow.UseLayout<QVBoxLayout>();
     var row1Layout = rootLayout.AddLayout<QHBoxLayout>();
     var button = row1Layout.AddWidget<QPushButton>(x =>
     {
         x.Text = "Click me!";
     });
-    var textEdit = row1Layout.AddWidget<QLineEdit>(x =>
-    {
-        x.PlaceholderText = "Type something!";
-    });
+    var textEdit = row1Layout.AddWidget<QLineEdit>();
+    textEdit.PlaceholderText = "Type something!";
+
     var treeView = rootLayout.AddWidget<QTreeView>();
-    builder.SetBinding(button, x => x.Text, x => x.ButtonText);
-    builder.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
-    builder.SetCommand(button, x => x.OnClicked, x => x.Fire);
 
-    builder.SetModel(treeView, x => x.List, [
-        new QModelColumn<MyClass, string?>(x => x.Value),
-        new QModelColumn<MyClass, bool>(x => x.Checked)
-    ]);
-
-    var view = builder.Build();
+    var view = new QtView<QMainWindow, MyViewModel>(mainWindow);
+    view.SetBinding(button, x => x.Text, x => x.ButtonText);
+    view.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
+    view.SetCommand(button, x => x.OnClicked, x => x.Fire);
+    view.SetModel(treeView, x => x.List, x =>
+    {
+        x.AddColumn(row => row.Value);
+        x.AddColumn(row => row.ValueDouble);
+        x.AddColumn(row => row.Checked);
+    });
 
     await view.ShowAsync(new MyViewModel());
 });
@@ -33,6 +40,7 @@
 public class MyClass
 {
     public string? Value { get; set; }
+    public double ValueDouble { get; set; }
     public bool Checked { get; set; }
 }
 

@@ -1,5 +1,7 @@
 using System.Drawing;
 
+namespace QtChungus;
+
 public readonly record struct QLineEdit(QObject Handle) : IQWidget
 {
     public static string ClassName => "QLineEdit";

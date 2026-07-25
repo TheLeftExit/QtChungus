@@ -15,11 +15,10 @@ qt_add_library(QtGlueObj OBJECT
     SignalRouter.cxx
     QModel.cxx
 
-    CStruct/Base.cxx
     CStruct/CVariant.cxx
     CStruct/CModelIndex.cxx
     
-    SharedLibShim.cxx
+    SharedLibShim.cxx 
 )
 
 target_include_directories(QtGlueObj PRIVATE

@@ -34,9 +34,9 @@ public:
 
     QModelIndex decodeIndex(CModelIndex index)
     {
-        if (*index.isValid())
+        if (index.IsValid)
         {
-            return createIndex(*index.row(), *index.column(), *index.internalPointer());
+            return createIndex(index.Row, index.Column, index.InternalPointer);
         }
         return QModelIndex();
     }
@@ -46,62 +46,59 @@ extern "C" void *CreateModelCore(void *managedHandle)
 {
     return new QModel(managedHandle);
 }
-extern "C" void EmitDataChangedCore(QModel *model, CModelIndexPtr topLeft, CModelIndexPtr bottomRight)
+extern "C" void EmitDataChangedCore(QModel *model, CModelIndex topLeft, CModelIndex bottomRight)
 {
     model->dataChanged(model->decodeIndex(topLeft), model->decodeIndex(bottomRight));
 }
 
 #include "QModel.moc"
 
-#include <iostream>
-using namespace std;
-
-extern "C" qint32 qmodel_rowcount(GCHandle managedHandle, CModelIndexPtr parent);
+extern "C" qint32 qmodel_rowcount(GCHandle managedHandle, CModelIndex parent);
 int QModel::rowCount(const QModelIndex &parent) const
 {
     return qmodel_rowcount(m_managedHandle, CModelIndex(parent));
 }
 
-extern "C" CVariantPtr qmodel_data(GCHandle managedHandle, CModelIndexPtr index, qint32 role);
+extern "C" CVariant qmodel_data(GCHandle managedHandle, CModelIndex index, qint32 role);
 QVariant QModel::data(const QModelIndex &index, int role) const
 {
-    return CVariant(qmodel_data(m_managedHandle, CModelIndex(index), role));
+    return qmodel_data(m_managedHandle, index, role);
 }
 
-extern "C" CVariantPtr qmodel_headerdata(GCHandle managedHandle, qint32 section, qint32 orientation, qint32 role);
+extern "C" CVariant qmodel_headerdata(GCHandle managedHandle, qint32 section, qint32 orientation, qint32 role);
 QVariant QModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    return CVariant(qmodel_headerdata(m_managedHandle, section, orientation, role));
+    return qmodel_headerdata(m_managedHandle, section, orientation, role);
 }
 
-extern "C" qint32 qmodel_columncount(GCHandle managedHandle, CModelIndexPtr parent);
+extern "C" qint32 qmodel_columncount(GCHandle managedHandle, CModelIndex parent);
 int QModel::columnCount(const QModelIndex &parent) const
 {
-    return qmodel_columncount(m_managedHandle, CModelIndex(parent));
+    return qmodel_columncount(m_managedHandle, parent);
 }
 
-extern "C" CModelIndexPtr qmodel_index(GCHandle managedHandle, qint32 row, qint32 column, CModelIndexPtr parent);
+extern "C" CModelIndex qmodel_index(GCHandle managedHandle, qint32 row, qint32 column, CModelIndex parent);
 QModelIndex QModel::index(int row, int column, const QModelIndex &parent) const
 {
-    CModelIndex result = qmodel_index(m_managedHandle, row, column, CModelIndex(parent));
-    return *result.isValid() ? createIndex(*result.row(), *result.column(), *result.internalPointer()) : QModelIndex();
+    CModelIndex result = qmodel_index(m_managedHandle, row, column, parent);
+    return result.IsValid ? createIndex(result.Row, result.Column, result.InternalPointer) : QModelIndex();
 }
 
-extern "C" CModelIndexPtr qmodel_parent(GCHandle managedHandle, CModelIndexPtr index);
+extern "C" CModelIndex qmodel_parent(GCHandle managedHandle, CModelIndex index);
 QModelIndex QModel::parent(const QModelIndex &index) const
 {
-    CModelIndex result = qmodel_parent(m_managedHandle, CModelIndex(index));
-    return *result.isValid() ? createIndex(*result.row(), *result.column(), *result.internalPointer()) : QModelIndex();
+    CModelIndex result = qmodel_parent(m_managedHandle, index);
+    return result.IsValid ? createIndex(result.Row, result.Column, result.InternalPointer) : QModelIndex();
 }
 
-extern "C" qint32 qmodel_flags(GCHandle managedHandle, CModelIndexPtr index);
+extern "C" qint32 qmodel_flags(GCHandle managedHandle, CModelIndex index);
 Qt::ItemFlags QModel::flags(const QModelIndex &index) const
 {
-    return static_cast<Qt::ItemFlag>(qmodel_flags(m_managedHandle, CModelIndex(index)));
+    return static_cast<Qt::ItemFlag>(qmodel_flags(m_managedHandle, index));
 }
 
-extern "C" qint32 qmodel_setdata(GCHandle managedHandle, CModelIndexPtr index, CVariantPtr value, qint32 role);
+extern "C" qint32 qmodel_setdata(GCHandle managedHandle, CModelIndex index, CVariant value, qint32 role);
 bool QModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    return qmodel_setdata(m_managedHandle, CModelIndex(index), CVariant(value), role);
+    return qmodel_setdata(m_managedHandle, index, value, role);
 }

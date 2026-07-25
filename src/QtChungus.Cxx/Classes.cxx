@@ -53,6 +53,9 @@ extern "C"
     {
         return target->setCentralWidget(widget);
     }
+    QWidget *qmainwindow_centralwidget(QMainWindow *target){
+        return target->centralWidget();
+    }
 
     void qboxlayout_addwidget(QBoxLayout *target, QWidget *widget, qint32 stretch, qint32 alignment)
     {

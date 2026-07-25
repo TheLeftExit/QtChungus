@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="QtChungus.Demo/QtChungusDemo.csproj" />
+  <Project Path="QtChungus.Demo/QtChungus.Demo.csproj" />
   <Project Path="QtChungus/QtChungus.csproj" />
 </Solution>

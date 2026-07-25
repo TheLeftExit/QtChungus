@@ -2,12 +2,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
+namespace QtChungus.Internal;
+
 public interface ISignalHandler<TViewModel>
 {
     void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel);
     void ProcessPropertyChanged(TViewModel viewModel, string propertyName);
 }
 
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
 public sealed class QtSignalAttribute : Attribute
 {
     public string SignalName { get; }
@@ -15,6 +18,7 @@ public sealed class QtSignalAttribute : Attribute
     public QtSignalAttribute(string signalName, string signalSignature) => (SignalName, SignalSignature) = (signalName, signalSignature);
 }
 
+// Despite the name, these are used as generic "class getter/setter"/"struct getter/setter" delegates
 public delegate T WidgetGetMethod<TOwner, T>(in TOwner owner) where TOwner : struct;
 public delegate void WidgetSetMethod<TOwner, T>(in TOwner owner, T value) where TOwner : struct;
 

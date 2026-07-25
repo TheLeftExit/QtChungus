@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 
+namespace QtChungus.Internal;
+
 public class QModelColumn<TRow, TValue> : IQModelColumn<TRow>
     where TRow : class
 {
@@ -20,7 +22,7 @@ public class QModelColumn<TRow, TValue> : IQModelColumn<TRow>
         _setMethod = propertyInfo.SetMethod?.CreateDelegate<ViewModelSetMethod<TRow, TValue>>();
     }
 
-    CVariant IQModelColumn<TRow>.Caption => new(_caption);
+    CVariant IQModelColumn<TRow>.Caption => _caption;
     CVariant IQModelColumn<TRow>.GetValue(TRow owner) => CVariant.Create(_getMethod(owner));
     bool IQModelColumn<TRow>.Editable => _setMethod is not null;
     void IQModelColumn<TRow>.SetValue(TRow owner, CVariant value) => _setMethod!(owner, value.Get<TValue>());

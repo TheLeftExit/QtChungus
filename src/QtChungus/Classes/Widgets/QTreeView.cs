@@ -1,10 +1,12 @@
 using System.Drawing;
 
+namespace QtChungus;
+
 public readonly record struct QTreeView(QObject Handle) : IQWidget
 {
     public static string ClassName => "QTreeView";
 
-    void IQWidget.SetDefaults()
+    void IQObject.SetDefaults()
     {
         Handle.SetProperty("rootIsDecorated", false);
     }

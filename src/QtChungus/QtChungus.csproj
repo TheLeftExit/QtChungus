@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,7 @@
     <Description>QtChungus package for testing and personal development purposes. May be updated without a version bump!</Description>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../QtGlue/**">
+    <None Include="../QtChungus.Cxx/**">
       <Pack>true</Pack>
       <PackagePath>tools/cmake/</PackagePath>
     </None>

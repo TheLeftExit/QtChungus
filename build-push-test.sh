@@ -7,8 +7,9 @@ dotnet nuget push QtChungus.0.0.1.nupkg --source git.theleftexit.net
 rm QtChungus.0.0.1.nupkg
 
 dotnet nuget locals all --clear
+dotnet restore ./src/QtChungus.Demo/QtChungus.Demo.csproj
 dotnet run --project ./src/QtChungus.Demo/QtChungus.Demo.csproj -p:UsePackage=true -v:diag
 
-dotnet publish ./src/QtChungus.Demo/QtChungus.Demo.csproj -p:UsePackage=true -p:DebugType=None -p:DebugSymbols=false -p:CopyOutputSymbolsToPublishDirectory=false -o ./ -v:diag /bl
-./QtChungus.Demo
-rm ./QtChungus.Demo
+dotnet publish ./src/QtChungus.Demo/QtChungus.Demo.csproj -p:UsePackage=true -p:DebugType=None -p:DebugSymbols=false -p:CopyOutputSymbolsToPublishDirectory=false -o ./bin
+./bin/QtChungus.Demo
+rm -rf ./bin

@@ -1,0 +1,3 @@
+Unlike C#, C++ doesn't have a compiler-invariant way to declare ABI-compatible structure layouts. The "proper" workaround is to manage heap-allocated byte arrays and pass pointers to such arrays between C# and C++. Older versions of this code base used to do so, but it proved too bothersome to maintain.
+
+Classes in this directory are designed to be blittable, but this may change if we switch to another compiler/OS. For now, this works just fine.

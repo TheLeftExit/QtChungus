@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/src/QtChungus.Cxx",
+    "cmake.buildDirectory": "${workspaceFolder}/bld"
+}

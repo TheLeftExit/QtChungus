@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualBasic;
 
+namespace QtChungus;
+
 public enum ApplicationState { NotCreated, Created, Running, Finished, Disposed }
 
 public partial class Application : IDisposable
@@ -18,24 +20,19 @@ public partial class Application : IDisposable
     {
         var args = Environment.GetCommandLineArgs();
         var argv = (byte**)NativeMemory.Alloc((nuint)args.Length, (nuint)sizeof(byte*));
-#pragma warning disable CA2014 // CLI arguments probably won't overflow the stack..?
         for (int i = 0; i < args.Length; i++)
         {
-            var utf16StringLength = args[i].Length + 1;
-            var utf16String = stackalloc char[utf16StringLength];
-            var utf16StringSpan = new Span<char>(utf16String, utf16StringLength);
+            var utf16StringSpan = args[i].AsSpan();
 
-            args[i].CopyTo(utf16StringSpan);
-
-            var utf8StringLength = Encoding.UTF8.GetByteCount(utf16StringSpan);
+            var utf8StringLength = Encoding.UTF8.GetByteCount(utf16StringSpan) + 1;
             var utf8String = (byte*)NativeMemory.Alloc((nuint)utf8StringLength);
             var utf8StringSpan = new Span<byte>(utf8String, utf8StringLength);
 
             Encoding.UTF8.GetBytes(utf16StringSpan, utf8StringSpan);
+            utf8StringSpan[^1] = 0;
 
             argv[i] = utf8String;
         }
-#pragma warning restore CA2014
         var argc = (int*)NativeMemory.Alloc(sizeof(int));
         *argc = args.Length;
         return Qt.qapplication_new(argc, argv);

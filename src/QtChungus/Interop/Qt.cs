@@ -2,7 +2,9 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
-internal static unsafe partial class Qt
+namespace QtChungus.Internal;
+
+public static unsafe partial class Qt
 {
     internal const string libraryName = "libQtGlue";
 
@@ -16,12 +18,6 @@ internal static unsafe partial class Qt
     public static partial int qapplication_exec(QObject target);
     [LibraryImport(libraryName)]
     public static partial void qcoreapplication_exit(QObject target);
-    [LibraryImport(libraryName)]
-    public static partial void qabstractitemview_setmodel(QObject target, QObject model);
-    [LibraryImport(libraryName)]
-    public static partial QObject qabstractitemview_model(QObject target);
-    [LibraryImport(libraryName)]
-    public static partial void qmainwindow_setcentralwidget(QObject target, QObject widget);
     [LibraryImport(libraryName)]
     public static partial void qboxlayout_addwidget(QObject target, QObject widget, int stretch, QtAlignment alignment);
     [LibraryImport(libraryName)]

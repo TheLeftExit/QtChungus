@@ -1,86 +1,104 @@
 using System.ComponentModel;
 
-public class View<TViewModel>
+namespace QtChungus.Internal
 {
-    private readonly QObject _handle;
-    private readonly ISignalHandler<TViewModel>[] _signalHandlers;
-
-    public View(QObject handle, ISignalHandler<TViewModel>[] signalHandlers)
+    public interface IViewBuilder<TViewModel>
     {
-        (_handle, _signalHandlers) = (handle, signalHandlers);
+        void AddSignalHandler(ISignalHandler<TViewModel> signalHandler);
     }
+}
 
-    public async Task ShowAsync(TViewModel viewModel)
+namespace QtChungus
+{
+    public class QtView<TWindow, TViewModel> : IViewBuilder<TViewModel>
+        where TWindow : struct, IQWindow
     {
-        var signalReceiver = new ViewSignalReceiver(_signalHandlers, viewModel);
+        private readonly TWindow _window;
+        private readonly List<ISignalHandler<TViewModel>> _signalHandlers;
 
-        var bindableViewModel = viewModel as INotifyPropertyChanged;
-        if (bindableViewModel is not null)
+        public QtView(TWindow window)
         {
-            bindableViewModel.PropertyChanged += signalReceiver.OnPropertyChanged;
+            _window = window;
+            _signalHandlers = new();
         }
 
-        Qt.qmainwindow_show(_handle);
-        using var signalSubscription = SignalRouter.Subscribe(_handle, signalReceiver);
-        signalReceiver.OnPropertyChanged(viewModel, new PropertyChangedEventArgs(null));
-        await WhenClosed();
-
-        if (bindableViewModel is not null)
+        public void AddSignalHandler(ISignalHandler<TViewModel> signalHandler)
         {
-            bindableViewModel.PropertyChanged -= signalReceiver.OnPropertyChanged;
+            _signalHandlers.Add(signalHandler);
         }
-    }
 
-    public async Task WhenClosed()
-    {
-        var eventReceiver = new ViewCloseEventReceiver(_handle);
-        using var eventSubscription = SignalRouter.Subscribe(_handle, eventReceiver);
-        SignalRouter.ConnectEvents(_handle);
-        await eventReceiver.WhenClosed();
-    }
-
-    private record ViewSignalReceiver(ISignalHandler<TViewModel>[] SignalHandlers, TViewModel ViewModel) : ISignalReceiver
-    {
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
+        public async Task ShowAsync(TViewModel viewModel)
         {
-            foreach (var handler in SignalHandlers)
+            var signalReceiver = new ViewSignalReceiver(_signalHandlers, viewModel);
+
+            var bindableViewModel = viewModel as INotifyPropertyChanged;
+            if (bindableViewModel is not null)
             {
-                handler.ProcessSignal(sender, signalName, ViewModel!);
+                bindableViewModel.PropertyChanged += signalReceiver.OnPropertyChanged;
+            }
+
+            _window.Show();
+            using var signalSubscription = SignalRouter.Subscribe(_window.Handle, signalReceiver);
+            signalReceiver.OnPropertyChanged(viewModel, new PropertyChangedEventArgs(null));
+            await WhenClosed();
+
+            if (bindableViewModel is not null)
+            {
+                bindableViewModel.PropertyChanged -= signalReceiver.OnPropertyChanged;
             }
         }
 
-        public void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        public async Task WhenClosed()
         {
-            foreach (var handler in SignalHandlers)
+            var eventReceiver = new ViewCloseEventReceiver(_window.Handle);
+            using var closeEventSubscription = SignalRouter.Subscribe(_window.Handle, eventReceiver);
+            SignalRouter.ConnectEvents(_window.Handle);
+            await eventReceiver.WhenClosed();
+        }
+
+        private record ViewSignalReceiver(IEnumerable<ISignalHandler<TViewModel>> SignalHandlers, TViewModel ViewModel) : ISignalReceiver
+        {
+            public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
             {
-                handler.ProcessPropertyChanged((TViewModel)sender!, e.PropertyName!);
+                foreach (var handler in SignalHandlers)
+                {
+                    handler.ProcessSignal(sender, signalName, ViewModel!);
+                }
+            }
+
+            public void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+            {
+                foreach (var handler in SignalHandlers)
+                {
+                    handler.ProcessPropertyChanged((TViewModel)sender!, e.PropertyName!);
+                }
             }
         }
-    }
 
-    private record ViewCloseEventReceiver(QObject Handle) : ISignalReceiver
-    {
-        private TaskCompletionSource _tcs = new();
-
-        public Task WhenClosed()
+        private record ViewCloseEventReceiver(QObject Handle) : ISignalReceiver
         {
-            return Handle.GetProperty<bool>("visible") ? _tcs.Task : Task.CompletedTask;
-        }
+            private TaskCompletionSource _tcs = new();
 
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
-        {
-            if (sender == Handle && signalName is "QEvent::Close")
+            public Task WhenClosed()
             {
-                ProcessDestroyed();
+                return Handle.GetProperty<bool>("visible") ? _tcs.Task : Task.CompletedTask;
             }
-        }
 
-        private async void ProcessDestroyed()
-        {
-            await Task.Yield();
-            if (!Handle.GetProperty<bool>("visible"))
+            public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
             {
-                _tcs.SetResult();
+                if (sender == Handle && signalName is "QEvent::Close")
+                {
+                    ProcessCloseEvent();
+                }
+            }
+
+            private async void ProcessCloseEvent()
+            {
+                await Task.Yield();
+                if (!Handle.GetProperty<bool>("visible"))
+                {
+                    _tcs.SetResult();
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
-// Enum definitions ripped from F12-ing them in the C++ editor in VS Code
-// Size-fixed for usage in P/Invokes
+namespace QtChungus.Internal;
 
+// Enum definitions ripped from F12-ing them in the C++ editor in VS Code
+// Normalized to `int` for usage in P/Invokes
 public enum QtAlignment : int
 {
     AlignLeft = 0x0001,
@@ -45,24 +46,6 @@ public enum QtItemDataRole : int
     // More general purpose
     SizeHintRole = 13,
     InitialSortOrderRole = 14,
-    // Internal UiLib roles. Start worrying when public roles go that high.
-    DisplayPropertyRole = 27,
-    DecorationPropertyRole = 28,
-    ToolTipPropertyRole = 29,
-    StatusTipPropertyRole = 30,
-    WhatsThisPropertyRole = 31,
-    // QRangeModel support for QML's required property var modelData
-    RangeModelDataRole = 40,
-    // QRangeModelAdapter support for accessing entire multi-role objects
-    RangeModelAdapterRole = 41,
-
-    // Reserved
-    UserRole = 0x0100,
-
-    // Used by Qt models
-    StandardItemFlagsRole = UserRole - 1,  // QStandardItemModel
-    FileInfoRole = UserRole - 4,           // QFileSystemModel
-    RemoteObjectsCacheRole = UserRole - 1, // QtRemoteObjects::QAbstractItemModelReplica
 };
 
 public enum QtOrientation : int

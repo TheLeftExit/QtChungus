@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+namespace QtChungus;
+
 public class BindableBase : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;

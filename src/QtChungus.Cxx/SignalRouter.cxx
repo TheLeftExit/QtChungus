@@ -17,12 +17,15 @@ public slots:
         QObject *sender = QObject::sender();
         QMetaMethod method = sender->metaObject()->method(QObject::senderSignalIndex());
         const char *signalName = method.name().constData();
-        // const char *senderName = method.enclosingMetaObject()->className();
         RouteSignalCore(sender, signalName);
     }
     void InvokeCallback(void *callbackHandle, void *stateHandle)
     {
         InvokeCallbackCore(callbackHandle, stateHandle);
+    }
+    void Free(void *pointer)
+    {
+        free(pointer);
     }
 
 protected:
@@ -74,6 +77,14 @@ extern "C"
             Qt::ConnectionType::QueuedConnection,
             Q_ARG(void *, callbackHandle),
             Q_ARG(void *, stateHandle));
+    }
+    void FreeLater(void *pointer)
+    {
+        QMetaObject::invokeMethod(
+            SignalRouter::Instance,
+            "Free",
+            Qt::ConnectionType::QueuedConnection,
+            Q_ARG(void *, pointer));
     }
 }
 
