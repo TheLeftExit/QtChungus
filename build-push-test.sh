@@ -7,6 +7,7 @@ dotnet nuget push QtChungus.0.0.1.nupkg --source git.theleftexit.net
 rm QtChungus.0.0.1.nupkg
 
 dotnet nuget locals all --clear
+rm -rf ./src/QtChungus.Demo/obj/libQtGlue
 dotnet restore ./src/QtChungus.Demo/QtChungus.Demo.csproj
 dotnet run --project ./src/QtChungus.Demo/QtChungus.Demo.csproj -p:UsePackage=true -v:diag
 

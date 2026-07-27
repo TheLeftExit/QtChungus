@@ -46,17 +46,6 @@ extern "C"
     void qcoreapplication_exit(QCoreApplication *target) { target->exit(); }
     void qmainwindow_show(QMainWindow *target) { return target->show(); }
 
-    void qabstractitemview_setmodel(QAbstractItemView *target, QAbstractItemModel *model) { target->setModel(model); }
-    QAbstractItemModel *qabstractitemview_model(QAbstractItemView *target) { return target->model(); }
-
-    void qmainwindow_setcentralwidget(QMainWindow *target, QWidget *widget)
-    {
-        return target->setCentralWidget(widget);
-    }
-    QWidget *qmainwindow_centralwidget(QMainWindow *target){
-        return target->centralWidget();
-    }
-
     void qboxlayout_addwidget(QBoxLayout *target, QWidget *widget, qint32 stretch, qint32 alignment)
     {
         target->addWidget(widget, stretch, static_cast<Qt::Alignment>(alignment));
