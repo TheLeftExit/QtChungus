@@ -11,7 +11,7 @@ namespace QtChungus.Internal
         public required string SignalName { private get; init; }
         public required ViewModelCommand<TViewModel> ViewModelCommandMethod { private get; init; }
 
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
+        void ISignalHandler<TViewModel>.ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
             if (sender != WidgetHandle) return;
             if (!name.SequenceEqual(SignalName)) return;
@@ -19,7 +19,7 @@ namespace QtChungus.Internal
             ViewModelCommandMethod(viewModel);
         }
 
-        public void ProcessPropertyChanged(TViewModel sender, string propertyName) { }
+        void ISignalHandler<TViewModel>.ProcessPropertyChanged(TViewModel sender, string propertyName) { }
     }
 }
 

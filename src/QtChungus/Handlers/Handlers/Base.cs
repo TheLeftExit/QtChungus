@@ -4,6 +4,11 @@ using System.Reflection;
 
 namespace QtChungus.Internal;
 
+public interface IViewBuilder<TViewModel>
+{
+    void AddSignalHandler(ISignalHandler<TViewModel> signalHandler);
+}
+
 public interface ISignalHandler<TViewModel>
 {
     void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel);

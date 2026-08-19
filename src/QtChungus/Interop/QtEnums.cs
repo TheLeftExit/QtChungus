@@ -1,4 +1,4 @@
-namespace QtChungus.Internal;
+namespace QtChungus;
 
 // Enum definitions ripped from F12-ing them in the C++ editor in VS Code
 // Normalized to `int` for usage in P/Invokes
@@ -68,4 +68,30 @@ public enum QtItemFlag : int
     ItemIsUserTristate = 256,
 
     Default = ItemIsSelectable | ItemIsEnabled
+};
+
+public enum QBoxLayoutDirection : int
+{
+    LeftToRight = 0,
+    RightToLeft = 1,
+    TopToBottom = 2,
+    BottomToTop = 3
+}
+
+public enum QLayoutSizeConstraint : int
+{
+    SetDefaultConstraint,
+    SetNoConstraint,
+    SetMinimumSize,
+    SetFixedSize,
+    SetMaximumSize,
+    SetMinAndMaxSize
+};
+
+public enum QtTextFormat
+{
+    PlainText,
+    RichText,
+    AutoText,
+    MarkdownText
 };

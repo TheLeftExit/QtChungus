@@ -16,7 +16,8 @@ extern "C" void FreeLater(void *pointer);
     F(QMetaType::QRect, QRect)                  \
     F(QMetaType::QSize, QSize)                  \
     F(QMetaType::QPoint, QPoint)                \
-    F(QMetaType::VoidStar, void *)
+    F(QMetaType::VoidStar, void *)              \
+    F(QMetaType::QObjectStar, QObject *)
 
 struct CRectangle
 {
@@ -57,6 +58,7 @@ struct CVariant
     CVariant(QVariant source)
     {
         Type = source.typeId();
+
         switch (static_cast<QMetaType::Type>(Type))
         {
 
@@ -80,7 +82,15 @@ struct CVariant
         case QMetaType::UnknownType:
             break;
         default:
-            qFatal("Failed to serialize QVariant with unknown typeId: %d", Type);
+            // QObject* typecodes other than QObjectStar shouldn't leak into C#
+            if (QMetaType(Type).flags().testFlag(QMetaType::PointerToQObject))
+            {
+                Type = QMetaType::QObjectStar;
+                *ValueAs<QObject *>() = source.value<QObject *>();
+                break;
+            }
+
+            qFatal("Failed to serialize QVariant with unknown typeId: %d (%s)", Type, QMetaType(Type).name());
             break;
         }
     }
@@ -101,7 +111,7 @@ struct CVariant
         case QMetaType::UnknownType:
             return QVariant();
         default:
-            qFatal("Failed to deserialize QVariant with unknown typeId: %d", Type);
+            qFatal("Failed to deserialize QVariant with unknown typeId: %d (%s)", Type, QMetaType(Type).name());
             break;
         }
     }

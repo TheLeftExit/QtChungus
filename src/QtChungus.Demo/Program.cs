@@ -1,29 +1,30 @@
 ﻿using System.Drawing;
 using QtChungus;
+using QtChungus.Internal;
 
 Application.Run(async () =>
 {
-    var mainWindow = QMainWindow.Create(x =>
+    var mainWindow = QObject.Create<QMainWindow>() with
     {
-        x.Size = new(500, 300);
+        Size = new(500, 300),
 #if DEBUG
-        x.WindowTitle = "QtChungus.Demo (DEBUG)";
+        WindowTitle = "QtChungus.Demo (DEBUG)",
 #else
-        x.WindowTitle = "QtChungus.Demo (RELEASE)";
+        WindowTitle = "QtChungus.Demo (RELEASE)",
 #endif
-    });
-    var rootLayout = mainWindow.UseLayout<QVBoxLayout>();
-    var row1Layout = rootLayout.AddLayout<QHBoxLayout>();
-    var button = row1Layout.AddWidget<QPushButton>(x =>
+    };
+    var rootLayout = mainWindow.UseLayout<QBoxLayout>() with { Direction = QBoxLayoutDirection.TopToBottom };
+    var row1Layout = rootLayout.AddLayout<QBoxLayout>() with { Direction = QBoxLayoutDirection.LeftToRight };
+    var button = row1Layout.AddWidget<QPushButton>() with 
     {
-        x.Text = "Click me!";
-    });
+        Text = "Click me!"
+    };
     var textEdit = row1Layout.AddWidget<QLineEdit>();
     textEdit.PlaceholderText = "Type something!";
 
     var treeView = rootLayout.AddWidget<QTreeView>();
 
-    var view = new QtView<QMainWindow, MyViewModel>(mainWindow);
+    var view = new SignalManager<QMainWindow, MyViewModel>(mainWindow);
     view.SetBinding(button, x => x.Text, x => x.ButtonText);
     view.SetBinding(textEdit, x => x.Text, x => x.ButtonText);
     view.SetCommand(button, x => x.OnClicked, x => x.Fire);

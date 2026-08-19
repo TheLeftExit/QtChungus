@@ -2,14 +2,12 @@ using System.Drawing;
 
 namespace QtChungus.Internal;
 
-// Not a base type; just a plain QWidget for when we need one (e.g. QMainWindow's central widget)
-public readonly record struct QWidget(QObject Handle) : IQWidget
+public readonly partial record struct QWidget(QObject Handle) : IQContainerWidget
 {
-    public static string ClassName => "QWidget";
+    static string IQObject.ClassName => "QWidget";
 
-    public Rectangle Bounds
+    public TLayout UseLayout<TLayout>() where TLayout : struct, IQLayout
     {
-        get => Handle.GetProperty<Rectangle>("geometry");
-        set => Handle.SetProperty("geometry", value);
+        return QWidgetHelper.UseLayout<QWidget, TLayout>(this);
     }
 }

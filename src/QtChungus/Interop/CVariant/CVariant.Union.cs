@@ -8,7 +8,7 @@ namespace QtChungus.Internal;
 public partial struct CVariant : IUnion
 {
     public object? Value => throw new NotSupportedException(); // If we're boxing, we're doing something wrong.
-    public bool HasValue => Type is not TypeCode.UnknownType;
+    public bool HasValue => Enum.IsDefined(Type) && Type is not TypeCode.UnknownType;
     
     public CVariant(bool? value)
     {
@@ -146,5 +146,17 @@ public partial struct CVariant : IUnion
     {
         value = ValueAs<nint>();
         return Type is TypeCode.VoidStar;
+    }
+
+    public CVariant(QObject? value)
+    {
+        if(value is not QObject valueCore) return;
+        Type = TypeCode.QObjectStar;
+        ValueAs<QObject>() = valueCore;
+    }
+    public bool TryGetValue(out QObject value)
+    {
+        value = ValueAs<QObject>();
+        return Type is TypeCode.QObjectStar;
     }
 }

@@ -2,9 +2,31 @@ using System.Drawing;
 
 namespace QtChungus;
 
-public readonly record struct QMainWindow(QObject Handle) : IQWindow
+public readonly record struct QMainWindow(QObject Handle) : IQContainerWidget
 {
-    public static string ClassName => "QMainWindow";
+    static string IQObject.ClassName => "QMainWindow";
+    void IQObject.SetDefaults()
+    {
+        CentralWidget = QObject.Create<QWidget>();
+    }
+    QObject IQContainerWidget.ContainerWidget => CentralWidget.Handle;
+
+    public TLayout UseLayout<TLayout>() where TLayout : struct, IQLayout
+    {
+        return QWidgetHelper.UseLayout<QMainWindow, TLayout>(this);
+    }
+
+    private QWidget CentralWidget
+    {
+        get => new(Handle.GetProperty<QObject>("centralWidget"));
+        set => Handle.SetProperty<QObject>("centralWidget", value.Handle);
+    }
+
+    public QLayoutSizeConstraint SizeConstraint
+    {
+        get => Handle.GetProperty<QObject>("layout").GetProperty<QLayoutSizeConstraint>("sizeConstraint");
+        set => Handle.GetProperty<QObject>("layout").SetProperty<QLayoutSizeConstraint>("sizeConstraint", value);
+    }
 
     public Size Size
     {
@@ -12,29 +34,9 @@ public readonly record struct QMainWindow(QObject Handle) : IQWindow
         set => Handle.SetProperty("size", value);
     }
 
-    public string WindowTitle
+    public string? WindowTitle
     {
-        get => Handle.GetProperty<string>("windowTitle");
+        get => Handle.GetProperty<string?>("windowTitle");
         set => Handle.SetProperty("windowTitle", value);
-    }
-
-    // =====
-
-    public TWidget AddWidget<TWidget>(Action<TWidget>? configureWidget) where TWidget : struct, IQWidget
-    {
-        return QObject.Create<TWidget>(configureWidget, Handle);
-    }
-
-    public TLayout UseLayout<TLayout>() where TLayout : struct, IQLayout
-    {
-        var centralWidget = QObject.Create<QWidget>();
-        Handle.SetProperty<QObject>("centralWidget", centralWidget.Handle);
-        var layout = QObject.Create<TLayout>(null, centralWidget.Handle);
-        return layout;
-    }
-
-    public void Show()
-    {
-        Qt.qmainwindow_show(Handle);
     }
 }

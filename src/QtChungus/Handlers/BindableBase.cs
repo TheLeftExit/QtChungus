@@ -14,10 +14,14 @@ public class BindableBase : INotifyPropertyChanged
         var args = eventArgsCache.GetOrAdd(propertyName ?? "$null", x => new PropertyChangedEventArgs(x));
         PropertyChanged?.Invoke(this, args);
     }
-    protected void SetValue<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected void SetValue<T>(ref T field, T value, [CallerMemberName] string? propertyName = null, params ReadOnlySpan<string> propertyNames)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         RaisePropertyChanged(propertyName);
+        foreach(var name in propertyNames)
+        {
+            RaisePropertyChanged(name);
+        }
     }
 }

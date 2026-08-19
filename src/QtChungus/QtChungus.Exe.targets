@@ -1,0 +1,39 @@
+<Project>
+  <PropertyGroup>
+      <!-- Overridable switch to support direct project referencing -->
+      <QtGlueSources>$(MSBuildThisFileDirectory)../tools/cmake/</QtGlueSources>
+
+      <QtGlueBuildFiles>$(BaseIntermediateOutputPath)libQtGlue/</QtGlueBuildFiles>
+      <QtGlueStatic>libQtGlue.a</QtGlueStatic>
+      <QtGlueShared>libQtGlue.so</QtGlueShared>
+  </PropertyGroup>
+
+  <Target Name="PrepareBuildQtGlue">
+    <ItemGroup>
+      <QtGlueSourceFiles Include="$(QtGlueSources)**" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Building QtGlue on the consumer's machine (easier cross-platform support + the package doesn't need fancy licensing) -->
+  <Target Name="BuildQtGlue" DependsOnTargets="PrepareBuildQtGlue" BeforeTargets="Build" Inputs="@(QtGlueSourceFiles)" Outputs="$(QtGlueBuildFiles)$(QtGlueStatic);$(QtGlueBuildFiles)$(QtGlueShared)" >
+    <Exec Command="cmake -S $(QtGlueSources) -B $(QtGlueBuildFiles)" />
+    <Exec Command="cmake --build $(QtGlueBuildFiles)" />
+  </Target>
+  
+  <!-- For regular builds, bundle libQtGlue.so -->
+  <Target Name="CopyQtGlue" AfterTargets="Build">
+    <Copy SourceFiles="$(QtGlueBuildFiles)libQtGlue.so" DestinationFolder="$(OutputPath)" />
+  </Target>
+
+  <!-- For NativeAOT builds, statically link libQtGlue.a
+    (libQtGlue.so will still be copied to the intermediate build folder, but that doesn't affect the publish directory) -->
+  <ItemGroup>
+    <LinkerArg Include="-Wl,-lQt6Widgets" />
+    <LinkerArg Include="-Wl,-lQt6Gui" />
+    <LinkerArg Include="-Wl,-lQt6Core" />
+    <LinkerArg Include="-lstdc++" />
+
+    <DirectPInvoke Include="libQtGlue" />
+    <NativeLibrary Include="$(QtGlueBuildFiles)$(QtGlueStatic)" />
+  </ItemGroup>
+</Project>

@@ -13,12 +13,12 @@ namespace QtChungus.Internal
         public required ViewModelGetMethod<TViewModel, IList<TRow>> ViewModelGetMethod { private get; init; }
         public required IQModelColumn<TRow>[] ModelColumns { private get; init; }
 
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
+        void ISignalHandler<TViewModel>.ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
             return;
         }
 
-        public void ProcessPropertyChanged(TViewModel sender, string? propertyName)
+        void ISignalHandler<TViewModel>.ProcessPropertyChanged(TViewModel sender, string? propertyName)
         {
             if (propertyName is not null && propertyName != ViewModelPropertyName) return;
 

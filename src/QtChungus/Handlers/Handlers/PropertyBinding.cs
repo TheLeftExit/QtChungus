@@ -21,7 +21,7 @@ namespace QtChungus.Internal
             CVariant.GetTypeCodeOrThrow<TValue>();
         }
 
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
+        void ISignalHandler<TViewModel>.ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
             if (sender != WidgetHandle) return;
             if (!name.SequenceEqual(SignalName)) return;
@@ -29,7 +29,7 @@ namespace QtChungus.Internal
             Push(viewModel, PushDirection.ToViewModel);
         }
 
-        public void ProcessPropertyChanged(TViewModel sender, string? propertyName)
+        void ISignalHandler<TViewModel>.ProcessPropertyChanged(TViewModel sender, string? propertyName)
         {
             if (propertyName is not null && propertyName != ViewModelPropertyName) return;
             Push(sender, PushDirection.ToWidget);

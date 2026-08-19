@@ -4,17 +4,22 @@ namespace QtChungus;
 
 public readonly record struct QLabel(QObject Handle) : IQWidget
 {
-    public static string ClassName => "QLabel";
+    static string IQObject.ClassName => "QLabel";
 
-    public Rectangle Bounds
+    void IQObject.SetDefaults()
     {
-        get => Handle.GetProperty<Rectangle>("geometry");
-        set => Handle.SetProperty("geometry", value);
+        TextFormat = QtTextFormat.MarkdownText;
     }
 
     public string? Text
     {
         get => Handle.GetProperty<string?>("text");
         set => Handle.SetProperty("text", value);
+    }
+
+    public QtTextFormat TextFormat
+    {
+        get => Handle.GetProperty<QtTextFormat>("textFormat");
+        set => Handle.SetProperty("textFormat", value);
     }
 }

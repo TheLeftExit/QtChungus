@@ -4,17 +4,11 @@ namespace QtChungus;
 
 public readonly record struct QPushButton(QObject Handle) : IQWidget
 {
-    public static string ClassName => "QPushButton";
+    static string IQObject.ClassName => "QPushButton";
 
-    public Rectangle Bounds
+    public string? Text
     {
-        get => Handle.GetProperty<Rectangle>("geometry");
-        set => Handle.SetProperty("geometry", value);
-    }
-
-    public string Text
-    {
-        get => Handle.GetProperty<string>("text");
+        get => Handle.GetProperty<string?>("text");
         set => Handle.SetProperty("text", value);
     }
 
