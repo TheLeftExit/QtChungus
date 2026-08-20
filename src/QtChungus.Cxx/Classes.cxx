@@ -49,6 +49,7 @@ extern "C" QObject *CreateObjectCore(char *className)
 
 extern "C"
 {
+    QObject *qobject_parent(QObject *target) { return target->parent(); }
     void qobject_delete(QObject *target) { delete target; }
 
     QApplication *qapplication_new(int *argc, char **argv) { return new QApplication(*argc, argv); }

@@ -2,13 +2,13 @@
 #include "CVariant.cxx"
 #include "CModelIndex.cxx"
 
+// todo: move to QcAbstractItemModel
+
 // using GCHandle = void *;
 typedef void *GCHandle;
 
 struct CReversePInvokeShim
 {
-    void (*RouteSignalCore)(QObject *, const char *);
-    void (*InvokeCallbackCore)(void *, void *);
     qint32 (*qmodel_rowcount)(GCHandle, CModelIndex);
     CVariant (*qmodel_data)(GCHandle, CModelIndex, qint32);
     CVariant (*qmodel_headerdata)(GCHandle, qint32, qint32, qint32);
@@ -26,8 +26,6 @@ extern "C" void InitializeShim(CReversePInvokeShim *pointer)
     shim = pointer;
 }
 
-extern "C" void RouteSignalCore(QObject *sender, const char *signalName) { shim->RouteSignalCore(sender, signalName); }
-extern "C" void InvokeCallbackCore(void *callbackHandle, void *stateHandle) { shim->InvokeCallbackCore(callbackHandle, stateHandle); }
 extern "C" qint32 qmodel_rowcount(GCHandle managedHandle, CModelIndex parent) { return shim->qmodel_rowcount(managedHandle, parent); }
 extern "C" CVariant qmodel_data(GCHandle managedHandle, CModelIndex index, qint32 role) { return shim->qmodel_data(managedHandle, index, role); }
 extern "C" CVariant qmodel_headerdata(GCHandle managedHandle, qint32 section, qint32 orientation, qint32 role) { return shim->qmodel_headerdata(managedHandle, section, orientation, role); }

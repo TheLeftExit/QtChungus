@@ -38,8 +38,6 @@ public partial class Application : IDisposable
         return Qt.qapplication_new(argc, argv);
     }
 
-    [LibraryImport(Qt.libraryName)]
-    private static partial void InitializeRouter();
 
     public Application()
     {
@@ -51,8 +49,6 @@ public partial class Application : IDisposable
         Instance = this;
         State = ApplicationState.Created;
 
-        InitializeRouter();
-
     }
     public int Run()
     {
@@ -60,7 +56,7 @@ public partial class Application : IDisposable
 
         State = ApplicationState.Running;
         var oldSc = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(new QtSynchronizationContext());
+        SynchronizationContext.SetSynchronizationContext(new QcSynchronizationContext());
         var result = Qt.qapplication_exec(_instance);
         SynchronizationContext.SetSynchronizationContext(oldSc);
         State = ApplicationState.Finished;
@@ -89,7 +85,7 @@ public partial class Application : IDisposable
             }
 
             Qt.qcoreapplication_exit(handle);
-        });
+        }, TaskContinuationOptions.ExecuteSynchronously);
         application.Run();
     }
 }

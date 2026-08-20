@@ -86,7 +86,12 @@ public partial struct CVariant : IUnion
     {
         Type = TypeCode.QString;
         var buffer = Marshal.StringToHGlobalUni(value);
-        SignalRouter.FreeLater(buffer);
+        async void FreeLater(nint pointer)
+        {
+            await Task.Yield();
+            Marshal.FreeHGlobal(pointer);
+        }
+        FreeLater(buffer);
         ValueAs<nint>() = buffer;
     }
     public bool TryGetValue(out string? value)

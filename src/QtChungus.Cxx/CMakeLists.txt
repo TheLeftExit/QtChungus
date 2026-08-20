@@ -12,17 +12,15 @@ qt_standard_project_setup()
 qt_add_library(QtGlueObj OBJECT
     Classes.cxx
     Properties.cxx
-    SignalRouter.cxx
-    QModel.cxx
 
-    CStruct/CVariant.cxx
-    CStruct/CModelIndex.cxx
+    QcSynchronizationContext.cxx
+    QcSignalRouter.cxx
+    QcAbstractItemModel.cxx
+
+    CVariant.cxx
+    CModelIndex.cxx
     
-    SharedLibShim.cxx 
-)
-
-target_include_directories(QtGlueObj PRIVATE
-    CStruct
+    SharedLibShim.cxx
 )
 
 target_link_libraries(QtGlueObj PRIVATE Qt6::Widgets)

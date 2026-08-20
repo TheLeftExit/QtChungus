@@ -36,7 +36,7 @@ public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel
         }
 
         Qt.qwidget_show(_window.Handle);
-        using var signalSubscription = SignalRouter.Subscribe(_window.Handle, signalReceiver);
+        using var signalSubscription = QcSignalRouter.Subscribe(_window.Handle, signalReceiver);
         signalReceiver.OnPropertyChanged(viewModel, new PropertyChangedEventArgs(null));
         await WhenClosed();
 
@@ -49,8 +49,8 @@ public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel
     public async Task WhenClosed()
     {
         var eventReceiver = new ViewCloseEventReceiver(_window.Handle);
-        using var closeEventSubscription = SignalRouter.Subscribe(_window.Handle, eventReceiver);
-        SignalRouter.ConnectEvents(_window.Handle);
+        using var closeEventSubscription = QcSignalRouter.Subscribe(_window.Handle, eventReceiver);
+        QcSignalRouter.ConnectEvents(_window.Handle);
         await eventReceiver.WhenClosed();
     }
 

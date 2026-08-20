@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace QtChungus.Internal;
 
-public unsafe ref partial struct CVariant
+public ref partial struct CVariant
 {
     private TypeCode Type;
-    private fixed long Buffer[2];
-    private ref T ValueAs<T>()
+    private unsafe fixed long Buffer[2];
+    private unsafe ref T ValueAs<T>()
     {
         // I really shouldn't need to fix `Value` since we're in a ref struct, but I get CS1666 otherwise.
         fixed (long* value = Buffer) return ref Unsafe.AsRef<T>(value);

@@ -18,13 +18,9 @@ unsafe partial struct CReversePInvokeShim
     public static void Initialize()
     {
         var shimPtr = (CReversePInvokeShim*)NativeMemory.AllocZeroed((nuint)sizeof(CReversePInvokeShim));
-        InitializeFrom<SignalRouter>(ref *shimPtr);
-        InitializeFrom<QtSynchronizationContext>(ref *shimPtr);
         InitializeFrom<QAbstractItemModel>(ref *shimPtr);
         InitializeShim(shimPtr);
     }
-    public delegate* unmanaged<QObject, byte*, void> RouteSignalCore;
-    public delegate* unmanaged<nint, nint, void> InvokeCallbackCore;
     public delegate* unmanaged<nint, CModelIndex, int> qmodel_rowcount;
     public delegate* unmanaged<nint, CModelIndex, QtItemDataRole, CVariant> qmodel_data;
     public delegate* unmanaged<nint, int, QtOrientation, QtItemDataRole, CVariant> qmodel_headerdata;

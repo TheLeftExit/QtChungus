@@ -54,7 +54,7 @@ namespace QtChungus
                 throw new NotSupportedException();
             }
 
-            SignalRouter.ConnectSignal(widget.Handle, signalInfo.SignalSignature);
+            QcSignalRouter.ConnectSignal(widget.Handle, signalInfo.SignalSignature);
 
             builder.AddSignalHandler(new CommandBinding<TViewModel, TWidget>
             {

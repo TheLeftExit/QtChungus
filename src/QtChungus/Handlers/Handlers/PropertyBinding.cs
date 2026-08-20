@@ -87,7 +87,7 @@ namespace QtChungus
             var signalInfo = controlProperty.GetCustomAttribute<QtSignalAttribute>();
             if (signalInfo is not null)
             {
-                SignalRouter.ConnectSignal(widget.Handle, signalInfo.SignalSignature);
+                QcSignalRouter.ConnectSignal(widget.Handle, signalInfo.SignalSignature);
             }
 
             var handler = new PropertyBinding<TViewModel, TWidget, TValue>

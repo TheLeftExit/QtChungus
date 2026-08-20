@@ -9,6 +9,8 @@ public static unsafe partial class Qt
     internal const string libraryName = "libQtGlue";
 
     [LibraryImport(libraryName)]
+    public static partial QObject qobject_parent(QObject target);
+    [LibraryImport(libraryName)]
     public static partial void qobject_delete(QObject target);
     [LibraryImport(libraryName)]
     public static partial QObject qapplication_new(int* argc, byte** argv);
