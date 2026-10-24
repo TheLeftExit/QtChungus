@@ -38,7 +38,7 @@ public interface IQModelColumn<T> where T : class
     CVariant.TypeCode Type { get; }
 }
 
-public partial class QListModel<T> : QAbstractItemModel where T : class
+public partial class QListModel<T> : QcAbstractItemModel where T : class
 {
     private readonly IList<T> _list;
     private readonly IQModelColumn<T>[] _columns;

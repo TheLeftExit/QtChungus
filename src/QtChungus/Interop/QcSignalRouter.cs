@@ -5,44 +5,50 @@ namespace QtChungus.Internal;
 
 public interface ISignalReceiver
 {
-    void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName);
+    void ProcessSignal(QObjectStar sender, ReadOnlySpan<char> signalName);
 }
 
 public unsafe static partial class QcSignalRouter
 {
-    [LibraryImport(Qt.libraryName, StringMarshalling = StringMarshalling.Utf8)]
-    private static partial void ConnectSignalCore(QObject target, string signalName, nint router);
-    [LibraryImport(Qt.libraryName)]
-    private static partial void ConnectEventsCore(QObject target, nint router);
-    [LibraryImport(Qt.libraryName)]
-    private static partial nint CreateSignalRouter(delegate* unmanaged<QObject, byte*, void> route);
+    [LibraryImport(QObject.libraryName, StringMarshalling = StringMarshalling.Utf8)]
+    private static partial void ConnectSignalCore(QObjectStar target, string signalName, nint router);
+    [LibraryImport(QObject.libraryName)]
+    private static partial void ConnectEventsCore(QObjectStar target, nint router);
+    [LibraryImport(QObject.libraryName)]
+    private static partial nint CreateSignalRouter(delegate* unmanaged<QObjectStar, byte*, void> route);
 
     private static Lazy<nint> _router = new(() => CreateSignalRouter(&RouteSignalCore));
-    public static void ConnectSignal(QObject target, string signalName) => ConnectSignalCore(target, signalName, _router.Value);
-    public static void ConnectEvents(QObject target) => ConnectEventsCore(target, _router.Value);
+    public static void ConnectSignal(QObjectStar target, string signalName) => ConnectSignalCore(target, signalName, _router.Value);
+    public static void ConnectEvents(QObjectStar target) => ConnectEventsCore(target, _router.Value);
 
     [UnmanagedCallersOnly]
-    private static void RouteSignalCore(QObject sender, byte* signalName)
+    private static void RouteSignalCore(QObjectStar sender, byte* signalName)
     {
-        for (var nextSender = sender; nextSender.Handle != 0; nextSender = Qt.qobject_parent(nextSender))
+        var signalNameUtf8 = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(signalName);
+
+        var parentSubscriberFound = false;
+        for (var nextSender = sender; nextSender.Handle != 0; nextSender = nextSender.Parent)
         {
             if (_subscribers.TryGetValue(nextSender, out var subscribers))
             {
-                var signalNameUtf8 = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(signalName);
                 Span<char> signalNameUtf16 = stackalloc char[Encoding.UTF8.GetCharCount(signalNameUtf8)];
                 Encoding.UTF8.GetChars(signalNameUtf8, signalNameUtf16);
                 foreach (var subscriber in subscribers)
                 {
                     subscriber.ProcessSignal(sender, signalNameUtf16);
                 }
-                return;
+                break;
             }
         }
-        throw new InvalidOperationException("We received a signal from a QObject without an ISignalReceiver parent!");
+
+        if (!parentSubscriberFound)
+        {
+            throw new InvalidOperationException("We received a signal from a QObject without an ISignalReceiver parent!");
+        }
     }
 
-    private static Dictionary<QObject, List<ISignalReceiver>> _subscribers = new();
-    public static IDisposable Subscribe(QObject target, ISignalReceiver signalReceiver)
+    private static Dictionary<QObjectStar, List<ISignalReceiver>> _subscribers = new();
+    public static IDisposable Subscribe(QObjectStar target, ISignalReceiver signalReceiver)
     {
         if (!_subscribers.TryGetValue(target, out var subscribers))
         {
@@ -53,9 +59,9 @@ public unsafe static partial class QcSignalRouter
     }
     private class Subscription : IDisposable
     {
-        private QObject _target;
+        private QObjectStar _target;
         private ISignalReceiver _signalReceiver;
-        public Subscription(QObject target, ISignalReceiver signalReceiver)
+        public Subscription(QObjectStar target, ISignalReceiver signalReceiver)
         {
             _target = target;
             _signalReceiver = signalReceiver;

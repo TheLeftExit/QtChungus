@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace QtChungus;
 
-public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel>, IView<TViewModel>
+public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewModel>, IView<TViewModel>
     where TWindow : struct, IQWidget
     where TViewModel : class
 {
@@ -56,7 +56,7 @@ public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel
 
     private record ViewSignalReceiver(IEnumerable<ISignalHandler<TViewModel>> SignalHandlers, TViewModel ViewModel) : ISignalReceiver
     {
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
+        public void ProcessSignal(QObjectStar sender, ReadOnlySpan<char> signalName)
         {
             foreach (var handler in SignalHandlers)
             {
@@ -73,7 +73,7 @@ public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel
         }
     }
 
-    private record ViewCloseEventReceiver(QObject Handle) : ISignalReceiver
+    private record ViewCloseEventReceiver(QObjectStar Handle) : ISignalReceiver
     {
         private readonly TaskCompletionSource _tcs = new();
 
@@ -82,7 +82,7 @@ public sealed class SignalManager<TWindow, TViewModel> : IViewBuilder<TViewModel
             return Handle.GetProperty<bool>("visible") ? _tcs.Task : Task.CompletedTask;
         }
 
-        public void ProcessSignal(QObject sender, ReadOnlySpan<char> signalName)
+        public void ProcessSignal(QObjectStar sender, ReadOnlySpan<char> signalName)
         {
             if (sender == Handle && signalName is "QEvent::Close")
             {

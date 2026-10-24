@@ -4,11 +4,11 @@ namespace QtChungus.Internal;
 
 public unsafe partial class QcSynchronizationContext : SynchronizationContext
 {
-    [LibraryImport(Qt.libraryName)]
+    [LibraryImport(QObject.libraryName)]
     private static partial void PostCallback(nint callbackHandle, nint stateHandle, nint context);
-    [LibraryImport(Qt.libraryName)]
-    private static partial nint CreateSynchronizationContext(delegate *unmanaged<nint, nint, void> invoke);
-    
+    [LibraryImport(QObject.libraryName)]
+    private static partial nint CreateSynchronizationContext(delegate* unmanaged<nint, nint, void> invoke);
+
     private nint _context;
 
     public QcSynchronizationContext()
@@ -29,8 +29,4 @@ public unsafe partial class QcSynchronizationContext : SynchronizationContext
     {
         PostCallback((nint)GCHandle.Alloc(d), (nint)GCHandle.Alloc(state), _context);
     }
-
-    
-
-    
 }

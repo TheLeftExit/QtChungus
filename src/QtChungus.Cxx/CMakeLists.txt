@@ -4,23 +4,22 @@ project(QtGlue LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
 qt_add_library(QtGlueObj OBJECT
-    Classes.cxx
-    Properties.cxx
+    QcMethods.cxx
+    Methods.g.cxx
 
-    QcSynchronizationContext.cxx
-    QcSignalRouter.cxx
-    QcAbstractItemModel.cxx
+    QcSynchronizationContext.h
+    QcSignalRouter.h
+    QcAbstractItemModel.h
 
     CVariant.cxx
     CModelIndex.cxx
-    
-    SharedLibShim.cxx
 )
 
 target_link_libraries(QtGlueObj PRIVATE Qt6::Widgets)

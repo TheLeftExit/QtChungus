@@ -9,10 +9,10 @@ public partial struct CVariant : IUnion
 {
     public object? Value => throw new NotSupportedException(); // If we're boxing, we're doing something wrong.
     public bool HasValue => Enum.IsDefined(Type) && Type is not TypeCode.UnknownType;
-    
+
     public CVariant(bool? value)
     {
-        if(value is not bool valueCore) return;
+        if (value is not bool valueCore) return;
         Type = TypeCode.Bool;
         ValueAs<bool>() = valueCore;
     }
@@ -24,7 +24,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(int? value)
     {
-        if(value is not int valueCore) return;
+        if (value is not int valueCore) return;
         Type = TypeCode.Int;
         ValueAs<int>() = valueCore;
     }
@@ -36,7 +36,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(uint? value)
     {
-        if(value is not uint valueCore) return;
+        if (value is not uint valueCore) return;
         Type = TypeCode.UInt;
         ValueAs<uint>() = valueCore;
     }
@@ -48,7 +48,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(long? value)
     {
-        if(value is not long valueCore) return;
+        if (value is not long valueCore) return;
         Type = TypeCode.LongLong;
         ValueAs<long>() = valueCore;
     }
@@ -60,7 +60,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(ulong? value)
     {
-        if(value is not ulong valueCore) return;
+        if (value is not ulong valueCore) return;
         Type = TypeCode.ULongLong;
         ValueAs<ulong>() = valueCore;
     }
@@ -72,7 +72,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(double? value)
     {
-        if(value is not double valueCore) return;
+        if (value is not double valueCore) return;
         Type = TypeCode.Double;
         ValueAs<double>() = valueCore;
     }
@@ -96,7 +96,7 @@ public partial struct CVariant : IUnion
     }
     public bool TryGetValue(out string? value)
     {
-        if(Type is not TypeCode.QString)
+        if (Type is not TypeCode.QString)
         {
             value = null;
             return false;
@@ -107,7 +107,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(Rectangle? value)
     {
-        if(value is not Rectangle valueCore) return;
+        if (value is not Rectangle valueCore) return;
         Type = TypeCode.QRect;
         ValueAs<Rectangle>() = valueCore;
     }
@@ -119,7 +119,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(Size? value)
     {
-        if(value is not Size valueCore) return;
+        if (value is not Size valueCore) return;
         Type = TypeCode.QSize;
         ValueAs<Size>() = valueCore;
     }
@@ -131,7 +131,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(Point? value)
     {
-        if(value is not Point valueCore) return;
+        if (value is not Point valueCore) return;
         Type = TypeCode.QPoint;
         ValueAs<Point>() = valueCore;
     }
@@ -143,7 +143,7 @@ public partial struct CVariant : IUnion
 
     public CVariant(nint? value)
     {
-        if(value is not nint valueCore) return;
+        if (value is not nint valueCore) return;
         Type = TypeCode.VoidStar;
         ValueAs<nint>() = valueCore;
     }
@@ -153,15 +153,15 @@ public partial struct CVariant : IUnion
         return Type is TypeCode.VoidStar;
     }
 
-    public CVariant(QObject? value)
+    public CVariant(QObjectStar? value)
     {
-        if(value is not QObject valueCore) return;
+        if (value is not QObjectStar valueCore) return;
         Type = TypeCode.QObjectStar;
-        ValueAs<QObject>() = valueCore;
+        ValueAs<QObjectStar>() = valueCore;
     }
-    public bool TryGetValue(out QObject value)
+    public bool TryGetValue(out QObjectStar value)
     {
-        value = ValueAs<QObject>();
+        value = ValueAs<QObjectStar>();
         return Type is TypeCode.QObjectStar;
     }
 }

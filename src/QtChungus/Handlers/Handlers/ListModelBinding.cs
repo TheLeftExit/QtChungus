@@ -8,12 +8,12 @@ namespace QtChungus.Internal
         where TWidget : struct, IQObject
         where TRow : class
     {
-        public required QObject WidgetHandle { private get; init; }
+        public required QObjectStar WidgetHandle { private get; init; }
         public required string? ViewModelPropertyName { private get; set; }
         public required ViewModelGetMethod<TViewModel, IList<TRow>> ViewModelGetMethod { private get; init; }
         public required IQModelColumn<TRow>[] ModelColumns { private get; init; }
 
-        void ISignalHandler<TViewModel>.ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
+        void ISignalHandler<TViewModel>.ProcessSignal(QObjectStar sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
             return;
         }
@@ -22,19 +22,19 @@ namespace QtChungus.Internal
         {
             if (propertyName is not null && propertyName != ViewModelPropertyName) return;
 
-            var oldNativeModel = WidgetHandle.GetProperty<QObject>("model");
-            var oldModel = oldNativeModel.Handle != 0 ? QAbstractItemModel.FromHandle(oldNativeModel.Handle) : null;
+            var oldNativeModel = WidgetHandle.GetProperty<QObjectStar>("model");
+            var oldModel = oldNativeModel.Handle != 0 ? QcAbstractItemModel.FromHandle(oldNativeModel.Handle) : null;
 
             var newList = ViewModelGetMethod(sender);
             var newModel = new QListModel<TRow>(newList, ModelColumns);
-            WidgetHandle.SetProperty<QObject>("model", newModel.Handle);
+            WidgetHandle.SetProperty<QObjectStar>("model", newModel.Handle);
 
             oldModel?.Dispose();
         }
     }
 
     public class ListModelBindingBuilder<TViewModel, TRow>(
-        QObject widgetHandle,
+        QObjectStar widgetHandle,
         string? viewModelPropertyName,
         ViewModelGetMethod<TViewModel, IList<TRow>> viewModelGetMethod
     )
@@ -66,7 +66,7 @@ namespace QtChungus
     public static partial class ViewBuilderExtensions
     {
         public static void SetModel<TViewModel, TWidget, TRow>(
-            this IViewBuilder<TViewModel> builder,
+            this ISignalManager<TViewModel> builder,
             TWidget widget,
             Expression<Func<TViewModel, IList<TRow>>> viewModelPropertySelector,
             Action<ListModelBindingBuilder<TViewModel, TRow>> configure

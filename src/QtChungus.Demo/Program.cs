@@ -2,9 +2,9 @@
 using QtChungus;
 using QtChungus.Internal;
 
-Application.Run(async () =>
+QcApplication.Run(async () =>
 {
-    var mainWindow = QObject.Create<QMainWindow>() with
+    var mainWindow = QObjectStar.Create<QMainWindow>() with
     {
         Size = new(500, 300),
 #if DEBUG

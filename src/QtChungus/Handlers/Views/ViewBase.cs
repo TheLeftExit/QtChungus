@@ -8,7 +8,7 @@ public abstract class ViewBase<TWindow, TViewModel> : IView<TViewModel>
 
     protected ViewBase()
     {
-        var window = QObject.Create<TWindow>();
+        var window = QObjectStar.Create<TWindow>();
         _view = new(window);
         Configure(window, _view);
     }

@@ -7,8 +7,8 @@ namespace QtChungus.Internal;
 public ref partial struct CVariant
 {
     private TypeCode Type;
-    private unsafe fixed long Buffer[2];
-    private unsafe ref T ValueAs<T>()
+    private fixed long Buffer[4];
+    private ref T ValueAs<T>()
     {
         // I really shouldn't need to fix `Value` since we're in a ref struct, but I get CS1666 otherwise.
         fixed (long* value = Buffer) return ref Unsafe.AsRef<T>(value);
@@ -35,7 +35,7 @@ public ref partial struct CVariant
         VoidStar = 31, // `nint` used in custom properties
         QObjectStar = 39
     }
-    
+
     private static readonly Dictionary<Type, TypeCode> _supportedTypes = new() {
         {typeof(bool), TypeCode.Bool},
         {typeof(int), TypeCode.Int},
@@ -48,7 +48,7 @@ public ref partial struct CVariant
         {typeof(Size), TypeCode.QSize},
         {typeof(Point), TypeCode.QPoint},
         {typeof(nint), TypeCode.VoidStar},
-        {typeof(QObject), TypeCode.QObjectStar}
+        {typeof(QObjectStar), TypeCode.QObjectStar}
     };
 
     public static CVariant Create<T>(T value)
@@ -64,7 +64,7 @@ public ref partial struct CVariant
         if (typeof(T) == typeof(Size)) return Unsafe.As<T, Size>(ref value);
         if (typeof(T) == typeof(Point)) return Unsafe.As<T, Point>(ref value);
         if (typeof(T) == typeof(nint)) return Unsafe.As<T, nint>(ref value);
-        if (typeof(T) == typeof(QObject)) return Unsafe.As<T, QObject>(ref value);
+        if (typeof(T) == typeof(QObjectStar)) return Unsafe.As<T, QObjectStar>(ref value);
         throw new NotImplementedException();
     }
 
@@ -81,7 +81,7 @@ public ref partial struct CVariant
         if (typeof(T) == typeof(Size)) return TryGetValue(out Size value) ? Unsafe.As<Size, T>(ref value) : throw new InvalidOperationException();
         if (typeof(T) == typeof(Point)) return TryGetValue(out Point value) ? Unsafe.As<Point, T>(ref value) : throw new InvalidOperationException();
         if (typeof(T) == typeof(nint)) return TryGetValue(out nint value) ? Unsafe.As<nint, T>(ref value) : throw new InvalidOperationException();
-        if (typeof(T) == typeof(QObject)) return TryGetValue(out QObject value) ? Unsafe.As<QObject, T>(ref value) : throw new InvalidOperationException();
+        if (typeof(T) == typeof(QObjectStar)) return TryGetValue(out QObjectStar value) ? Unsafe.As<QObjectStar, T>(ref value) : throw new InvalidOperationException();
         throw new NotSupportedException();
     }
 }

@@ -1,6 +1,9 @@
 #include <QVariant>
 #include <QRect>
 #include <QApplication>
+#include <QMetaType>
+
+#include "CModelIndex.cxx"
 
 #ifndef CVARIANT_H
 #define CVARIANT_H
@@ -11,7 +14,7 @@ struct CVariant
 
 private:
     qint32 Type;
-    qint64 Value[2];
+    qint64 Value[4];
 
     template <typename T>
     T *ValueAs()
@@ -171,6 +174,7 @@ public:
         return GetValue<QObject *>(TypeCode::QObjectStar);
     }
 
+public:
 #define QTGLUE_FOR_EACH_CVARIANT_TYPE(F) \
     F(TypeCode::Bool, bool)              \
     F(TypeCode::Int, qint32)             \
@@ -228,6 +232,20 @@ public:
         }
 
         qFatal("Failed to deserialize CVariant with unknown typeId: %d (%s)", Type, QMetaType(Type).name());
+    }
+
+public:
+    template <typename T>
+    static CVariant FromCustomType(T value)
+    {
+        CVariant result = CVariant(QVariant());
+        *result.ValueAs<T>() = value;
+        return result;
+    }
+    template <typename T>
+    T ToCustomType()
+    {
+        return *ValueAs<T>();
     }
 };
 

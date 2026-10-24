@@ -7,7 +7,7 @@ namespace QtChungus.Internal
         where TViewModel : class
         where TWidget : struct, IQObject
     {
-        public required QObject WidgetHandle { private get; init; }
+        public required QObjectStar WidgetHandle { private get; init; }
         public required string? SignalName { private get; init; }
         public required WidgetGetMethod<TWidget, TValue> WidgetGetMethod { private get; init; }
         public required WidgetSetMethod<TWidget, TValue>? WidgetSetMethod { private get; init; }
@@ -21,7 +21,7 @@ namespace QtChungus.Internal
             CVariant.GetTypeCodeOrThrow<TValue>();
         }
 
-        void ISignalHandler<TViewModel>.ProcessSignal(QObject sender, ReadOnlySpan<char> name, TViewModel viewModel)
+        void ISignalHandler<TViewModel>.ProcessSignal(QObjectStar sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
             if (sender != WidgetHandle) return;
             if (!name.SequenceEqual(SignalName)) return;
@@ -67,7 +67,7 @@ namespace QtChungus
     public static partial class ViewBuilderExtensions
     {
         public static void SetBinding<TViewModel, TWidget, TValue>(
-            this IViewBuilder<TViewModel> builder,
+            this ISignalManager<TViewModel> builder,
             TWidget widget,
             Expression<Func<TWidget, TValue>> widgetPropertySelector,
             Expression<Func<TViewModel, TValue>> viewModelPropertySelector

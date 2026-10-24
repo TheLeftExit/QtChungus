@@ -19,7 +19,7 @@ public class BindableBase : INotifyPropertyChanged
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         RaisePropertyChanged(propertyName);
-        foreach(var name in propertyNames)
+        foreach (var name in propertyNames)
         {
             RaisePropertyChanged(name);
         }
