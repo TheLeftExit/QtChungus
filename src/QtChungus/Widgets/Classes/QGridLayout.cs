@@ -13,7 +13,8 @@ public unsafe readonly struct QGridLayout
     : IQLayout
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QGridLayout"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QGridLayout";
 
     public static implicit operator QLayout(QGridLayout source) => QLayout.FromHandle(source.Handle);
     public static explicit operator QGridLayout(QLayout source) => QGridLayout.FromHandle(source.Handle);
@@ -25,38 +26,38 @@ public unsafe readonly struct QGridLayout
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QGridLayout_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(25, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void addLayout(QLayout layout, int row, int column, int rowSpan, int columnSpan, QtAlignment alignment)
     {
         CVariant* parameters = stackalloc CVariant[] { layout.Handle, row, column, rowSpan, columnSpan, Unsafe.BitCast<QtAlignment, long>(alignment) };
-        QObjectStar.QcInvoke("QGridLayout_addLayout_QLayout_int_int_int_int_QtAlignment", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(26, this.Handle, out var result, parameters);
     }
     private void addWidget(QWidget widget, int row, int column, int rowSpan, int columnSpan, QtAlignment alignment)
     {
         CVariant* parameters = stackalloc CVariant[] { widget.Handle, row, column, rowSpan, columnSpan, Unsafe.BitCast<QtAlignment, long>(alignment) };
-        QObjectStar.QcInvoke("QGridLayout_addWidget_QWidget_int_int_int_int_QtAlignment", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(27, this.Handle, out var result, parameters);
     }
     private void setColumnMinimumWidth(int column, int minSize)
     {
         CVariant* parameters = stackalloc CVariant[] { column, minSize };
-        QObjectStar.QcInvoke("QGridLayout_setColumnMinimumWidth_int_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(28, this.Handle, out var result, parameters);
     }
     private void setColumnStretch(int column, int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { column, stretch };
-        QObjectStar.QcInvoke("QGridLayout_setColumnStretch_int_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(29, this.Handle, out var result, parameters);
     }
     private void setRowMinimumHeight(int row, int minSize)
     {
         CVariant* parameters = stackalloc CVariant[] { row, minSize };
-        QObjectStar.QcInvoke("QGridLayout_setRowMinimumHeight_int_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(30, this.Handle, out var result, parameters);
     }
     private void setRowStretch(int row, int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { row, stretch };
-        QObjectStar.QcInvoke("QGridLayout_setRowStretch_int_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(31, this.Handle, out var result, parameters);
     }
 #nullable restore
 

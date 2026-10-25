@@ -13,7 +13,8 @@ public unsafe readonly struct QLayout
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QLayout"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QLayout";
 
     public static implicit operator QObject(QLayout source) => QObject.FromHandle(source.Handle);
     public static explicit operator QLayout(QObject source) => QLayout.FromHandle(source.Handle);

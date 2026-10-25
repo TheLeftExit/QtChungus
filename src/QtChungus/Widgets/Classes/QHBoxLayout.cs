@@ -13,7 +13,8 @@ public unsafe readonly struct QHBoxLayout
     : IQLayout
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QHBoxLayout"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QHBoxLayout";
 
     public static implicit operator QBoxLayout(QHBoxLayout source) => QBoxLayout.FromHandle(source.Handle);
     public static explicit operator QHBoxLayout(QBoxLayout source) => QHBoxLayout.FromHandle(source.Handle);
@@ -28,22 +29,22 @@ public unsafe readonly struct QHBoxLayout
     private void addLayout(QLayout layout, int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { layout.Handle, stretch };
-        QObjectStar.QcInvoke("QBoxLayout_addLayout_QLayout_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(10, this.Handle, out var result, parameters);
     }
     private void addStretch(int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { stretch };
-        QObjectStar.QcInvoke("QBoxLayout_addStretch_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(11, this.Handle, out var result, parameters);
     }
     private void addWidget(QWidget widget, int stretch, QtAlignment alignment)
     {
         CVariant* parameters = stackalloc CVariant[] { widget.Handle, stretch, Unsafe.BitCast<QtAlignment, long>(alignment) };
-        QObjectStar.QcInvoke("QBoxLayout_addWidget_QWidget_int_QtAlignment", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(12, this.Handle, out var result, parameters);
     }
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QHBoxLayout_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(35, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
 #nullable restore

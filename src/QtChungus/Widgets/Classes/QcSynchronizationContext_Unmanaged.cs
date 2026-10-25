@@ -13,7 +13,8 @@ internal unsafe readonly struct QcSynchronizationContext_Unmanaged
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QcSynchronizationContext"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QcSynchronizationContext";
 
     public static implicit operator QObject(QcSynchronizationContext_Unmanaged source) => QObject.FromHandle(source.Handle);
     public static explicit operator QcSynchronizationContext_Unmanaged(QObject source) => QcSynchronizationContext_Unmanaged.FromHandle(source.Handle);
@@ -22,13 +23,13 @@ internal unsafe readonly struct QcSynchronizationContext_Unmanaged
     private static QObjectStar @new(delegate* unmanaged<nint, nint, void> invoke)
     {
         CVariant* parameters = stackalloc CVariant[] { (nint)invoke };
-        QObjectStar.QcInvoke("QcSynchronizationContext_Unmanaged_@new_delegate* unmanaged<nint, nint, void>", default, out var result, parameters);
+        QObjectStar.QcInvoke(19, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void postCallback(nint callback, nint state)
     {
         CVariant* parameters = stackalloc CVariant[] { callback, state };
-        QObjectStar.QcInvoke("QcSynchronizationContext_Unmanaged_postCallback_nint_nint", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(20, this.Handle, out var result, parameters);
     }
 #nullable restore
 

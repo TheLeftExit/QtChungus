@@ -13,7 +13,8 @@ public unsafe readonly struct QFormLayout
     : IQLayout
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QFormLayout"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QFormLayout";
 
     public static implicit operator QLayout(QFormLayout source) => QLayout.FromHandle(source.Handle);
     public static explicit operator QFormLayout(QLayout source) => QFormLayout.FromHandle(source.Handle);
@@ -25,18 +26,18 @@ public unsafe readonly struct QFormLayout
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QFormLayout_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(21, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void addRow(string labelText, QLayout field)
     {
         CVariant* parameters = stackalloc CVariant[] { labelText, field.Handle };
-        QObjectStar.QcInvoke("QFormLayout_addRow_string_QLayout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(22, this.Handle, out var result, parameters);
     }
     private void addRow(string labelText, QWidget field)
     {
         CVariant* parameters = stackalloc CVariant[] { labelText, field.Handle };
-        QObjectStar.QcInvoke("QFormLayout_addRow_string_QWidget", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(23, this.Handle, out var result, parameters);
     }
 #nullable restore
 

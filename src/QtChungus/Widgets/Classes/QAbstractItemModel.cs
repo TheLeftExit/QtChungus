@@ -13,7 +13,8 @@ public unsafe readonly struct QAbstractItemModel
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QAbstractItemModel"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QAbstractItemModel";
 
     public static implicit operator QObject(QAbstractItemModel source) => QObject.FromHandle(source.Handle);
     public static explicit operator QAbstractItemModel(QObject source) => QAbstractItemModel.FromHandle(source.Handle);

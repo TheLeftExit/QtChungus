@@ -3,7 +3,7 @@ using QtChungus;
 using QtChungus.Internal;
 
 using var qApp = new QApplication();
-//SynchronizationContext.SetSynchronizationContext(new QcSynchronizationContext());
+
 qApp.Run(async () =>
 {
     var mainWindow = new QMainWindow() with

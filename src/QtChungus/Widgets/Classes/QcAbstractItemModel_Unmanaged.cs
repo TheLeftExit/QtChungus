@@ -13,7 +13,8 @@ internal unsafe readonly struct QcAbstractItemModel_Unmanaged
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QcAbstractItemModel"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QcAbstractItemModel";
 
     public static implicit operator QAbstractItemModel(QcAbstractItemModel_Unmanaged source) => QAbstractItemModel.FromHandle(source.Handle);
     public static explicit operator QcAbstractItemModel_Unmanaged(QAbstractItemModel source) => QcAbstractItemModel_Unmanaged.FromHandle(source.Handle);
@@ -25,18 +26,18 @@ internal unsafe readonly struct QcAbstractItemModel_Unmanaged
     private static QObjectStar @new(nint handle, nint vmt)
     {
         CVariant* parameters = stackalloc CVariant[] { handle, vmt };
-        QObjectStar.QcInvoke("QcAbstractItemModel_Unmanaged_@new_nint_nint", default, out var result, parameters);
+        QObjectStar.QcInvoke(13, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void emitDataChanged(CModelIndex topLeft, CModelIndex buttomRight)
     {
         CVariant* parameters = stackalloc CVariant[] { CVariant.FromCustomType(topLeft), CVariant.FromCustomType(buttomRight) };
-        QObjectStar.QcInvoke("QcAbstractItemModel_Unmanaged_emitDataChanged_CModelIndex_CModelIndex", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(14, this.Handle, out var result, parameters);
     }
     private nint managedHandle()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QcAbstractItemModel_Unmanaged_managedHandle", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(15, this.Handle, out var result, parameters);
         return result.Get<nint>();
     }
 #nullable restore

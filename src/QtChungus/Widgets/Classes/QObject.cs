@@ -13,7 +13,8 @@ public unsafe readonly struct QObject
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QObject"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QObject";
 
 #nullable disable
 #nullable restore

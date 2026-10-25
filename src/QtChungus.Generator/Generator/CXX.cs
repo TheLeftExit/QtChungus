@@ -19,9 +19,10 @@ $$"""
 
         writer.WriteLine(
 """
-extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *returnValue, CVariant *parameters)
+extern "C" void QcInvoke(int methodId, QObject *target, CVariant *returnValue, CVariant *parameters)
 {
-    std::string_view methodIdView{methodId};
+    switch (methodId)
+    {
 """
         );
 
@@ -37,18 +38,18 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
             }
             writer.WriteLine(
 $$"""
-    if (methodIdView == "{{method.Id}}")
-    {
+    case {{QMethod.All.IndexOf(method)}}:
         {{methodCall}};
         return;
-    }
 """
             );
         }
 
         writer.WriteLine(
 """
-    qFatal("Unknown methodId: %s, methodId");
+    default:
+        qFatal("Unknown methodId: %s, methodId");
+    }
 }
 """
         );

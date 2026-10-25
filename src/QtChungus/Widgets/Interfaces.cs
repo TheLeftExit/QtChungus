@@ -5,6 +5,7 @@ namespace QtChungus.Internal;
 public interface IQObject // All QObject descendants
 {
     QObjectStar Handle { get; init; }
+    abstract static string ClassName { get; }
 }
 public interface IQChildWidget : IQObject; // Widget usable as a child widget
 public interface IQContainerWidget : IQObject // Widget usable as a parent widget
@@ -23,10 +24,10 @@ public static class QObjectExtensions
     extension<T>(T target) where T : struct, IQObject
     {
         public static T FromHandle(QObjectStar handle) => default(T) with { Handle = handle };
-        internal QObjectStar ValidateHandle(QObjectStar handle, string className)
+        internal QObjectStar ValidateHandle(QObjectStar handle)
         {
             if (target.Handle != default) throw new InvalidOperationException("Attempted to overwrite a managed QObject's handle.");
-            if (!handle.Inherits(className)) throw new InvalidOperationException("Attempted to assign a handle to a mismatched managed QObject type.");
+            if (!handle.IsAssignableTo<T>()) throw new InvalidOperationException("Attempted to assign a handle to a mismatched managed QObject type.");
             return handle;
         }
     }
@@ -42,7 +43,7 @@ public static class QObjectExtensions
         return QWidget.FromHandle(widget.Handle);
     }
 
-    private static TLayout UseLayout<TWidget, TLayout>(TWidget widget)
+    internal static TLayout UseLayout<TWidget, TLayout>(TWidget widget)
         where TWidget : struct, IQContainerWidget
         where TLayout : struct, IQLayout
     {

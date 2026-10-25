@@ -13,7 +13,8 @@ public unsafe readonly struct QTreeView
     : IQChildWidget
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QTreeView"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QTreeView";
 
     public static implicit operator QAbstractItemView(QTreeView source) => QAbstractItemView.FromHandle(source.Handle);
     public static explicit operator QTreeView(QAbstractItemView source) => QTreeView.FromHandle(source.Handle);
@@ -31,57 +32,57 @@ public unsafe readonly struct QTreeView
     private QAbstractItemModel model()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QAbstractItemView_model", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(2, this.Handle, out var result, parameters);
         return QAbstractItemModel.FromHandle(result.Get<QObjectStar>());
     }
     private void setModel(QAbstractItemModel value)
     {
         CVariant* parameters = stackalloc CVariant[] { value.Handle };
-        QObjectStar.QcInvoke("QAbstractItemView_setModel_QAbstractItemModel", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(3, this.Handle, out var result, parameters);
     }
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QTreeView_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(52, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private bool rootIsDecorated()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QTreeView_rootIsDecorated", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(53, this.Handle, out var result, parameters);
         return result.Get<bool>();
     }
     private void setRootIsDecorated(bool value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QTreeView_setRootIsDecorated_bool", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(54, this.Handle, out var result, parameters);
     }
     private bool isVisible()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_isVisible", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(57, this.Handle, out var result, parameters);
         return result.Get<bool>();
     }
     private QLayout layout()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_layout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(58, this.Handle, out var result, parameters);
         return QLayout.FromHandle(result.Get<QObjectStar>());
     }
     private void setLayout(QLayout value)
     {
         CVariant* parameters = stackalloc CVariant[] { value.Handle };
-        QObjectStar.QcInvoke("QWidget_setLayout_QLayout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(59, this.Handle, out var result, parameters);
     }
     private void setVisible(bool value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QWidget_setVisible_bool", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(60, this.Handle, out var result, parameters);
     }
     private void show()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_show", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(61, this.Handle, out var result, parameters);
     }
 #nullable restore
 

@@ -122,6 +122,8 @@ public class QFunctionPointerType(string csName, string cppName) : QType(csName,
 public record QMethod(QType? ReturnType, QObjectType Owner, string Name, QParameter[] Parameters)
 {
     public string Id => string.Join('_', [Owner.CsName, Name, .. Parameters.Select(x => x.Type.CsName)]);
+    public static QMethod[] All => field ??= QObjectType.All.SelectMany(x => x.Methods).OrderBy(x => x.Id).ToArray();
+    public static int IndexOf(QMethod method) => All.IndexOf(method);
 }
 
 

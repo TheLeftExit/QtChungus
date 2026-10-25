@@ -134,7 +134,8 @@ $$"""
 {{oldFileInfo?.InheritanceRegion}}
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "{{type.CppName}}"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "{{type.CppName}}";
 
 """
         );
@@ -173,7 +174,7 @@ $$"""
     {{accessModifier}} {{returnType}} {{method.Name}}({{signatureParameters}})
     {
         CVariant* parameters = stackalloc CVariant[] { {{stackallocParameters}} };
-        QObjectStar.QcInvoke("{{method.Id}}", {{thisParameter}}, out var result, parameters);
+        QObjectStar.QcInvoke({{QMethod.IndexOf(method)}}, {{thisParameter}}, out var result, parameters);
 """
             );
             if (method.ReturnType is not null)

@@ -13,7 +13,8 @@ internal unsafe readonly struct QcSignalRouter_Unmanaged
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QcSignalRouter"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QcSignalRouter";
 
     public static implicit operator QObject(QcSignalRouter_Unmanaged source) => QObject.FromHandle(source.Handle);
     public static explicit operator QcSignalRouter_Unmanaged(QObject source) => QcSignalRouter_Unmanaged.FromHandle(source.Handle);
@@ -22,18 +23,18 @@ internal unsafe readonly struct QcSignalRouter_Unmanaged
     private static QObjectStar @new(delegate* unmanaged<QObjectStar, byte*, void> route)
     {
         CVariant* parameters = stackalloc CVariant[] { (nint)route };
-        QObjectStar.QcInvoke("QcSignalRouter_Unmanaged_@new_delegate* unmanaged<QObjectStar, byte*, void>", default, out var result, parameters);
+        QObjectStar.QcInvoke(16, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void connectEventsCore(QObjectStar target)
     {
         CVariant* parameters = stackalloc CVariant[] { target };
-        QObjectStar.QcInvoke("QcSignalRouter_Unmanaged_connectEventsCore_QObjectStar", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(17, this.Handle, out var result, parameters);
     }
     private void connectSignalCore(QObjectStar target, byte* signalName)
     {
         CVariant* parameters = stackalloc CVariant[] { target, (nint)signalName };
-        QObjectStar.QcInvoke("QcSignalRouter_Unmanaged_connectSignalCore_QObjectStar_byte*", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(18, this.Handle, out var result, parameters);
     }
 #nullable restore
 

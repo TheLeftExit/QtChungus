@@ -13,7 +13,8 @@ public unsafe readonly struct QBoxLayout
     : IQObject
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QBoxLayout"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QBoxLayout";
 
     public static implicit operator QLayout(QBoxLayout source) => QLayout.FromHandle(source.Handle);
     public static explicit operator QBoxLayout(QLayout source) => QBoxLayout.FromHandle(source.Handle);
@@ -25,23 +26,23 @@ public unsafe readonly struct QBoxLayout
     private static QObjectStar @new(QBoxLayoutDirection direction)
     {
         CVariant* parameters = stackalloc CVariant[] { Unsafe.BitCast<QBoxLayoutDirection, long>(direction) };
-        QObjectStar.QcInvoke("QBoxLayout_@new_QBoxLayoutDirection", default, out var result, parameters);
+        QObjectStar.QcInvoke(9, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private void addLayout(QLayout layout, int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { layout.Handle, stretch };
-        QObjectStar.QcInvoke("QBoxLayout_addLayout_QLayout_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(10, this.Handle, out var result, parameters);
     }
     private void addStretch(int stretch)
     {
         CVariant* parameters = stackalloc CVariant[] { stretch };
-        QObjectStar.QcInvoke("QBoxLayout_addStretch_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(11, this.Handle, out var result, parameters);
     }
     private void addWidget(QWidget widget, int stretch, QtAlignment alignment)
     {
         CVariant* parameters = stackalloc CVariant[] { widget.Handle, stretch, Unsafe.BitCast<QtAlignment, long>(alignment) };
-        QObjectStar.QcInvoke("QBoxLayout_addWidget_QWidget_int_QtAlignment", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(12, this.Handle, out var result, parameters);
     }
 #nullable restore
 

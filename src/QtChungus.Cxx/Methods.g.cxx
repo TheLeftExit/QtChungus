@@ -21,318 +21,197 @@
 #include "QcAbstractItemModel.hxx"
 #include "QcSignalRouter.hxx"
 #include "QcSynchronizationContext.hxx"
-extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *returnValue, CVariant *parameters)
+extern "C" void QcInvoke(int methodId, QObject *target, CVariant *returnValue, CVariant *parameters)
 {
-    std::string_view methodIdView{methodId};
-    if (methodIdView == "QAbstractButton_setText_string")
+    switch (methodId)
     {
+    case 0:
         dynamic_cast<QAbstractButton *>(target)->setText(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QAbstractButton_text")
-    {
+    case 1:
         *returnValue = dynamic_cast<QAbstractButton *>(target)->text();
         return;
-    }
-    if (methodIdView == "QAbstractItemView_model")
-    {
+    case 2:
         *returnValue = dynamic_cast<QAbstractItemView *>(target)->model();
         return;
-    }
-    if (methodIdView == "QAbstractItemView_setModel_QAbstractItemModel")
-    {
+    case 3:
         dynamic_cast<QAbstractItemView *>(target)->setModel(dynamic_cast<QAbstractItemModel *>(static_cast<QObject *>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QApplication_@new_int*_byte**")
-    {
+    case 4:
         *returnValue = new QApplication(*static_cast<int *>(static_cast<void *>(parameters[0])), static_cast<char **>(static_cast<void *>(parameters[1])));
         return;
-    }
-    if (methodIdView == "QApplication_exec")
-    {
+    case 5:
         *returnValue = dynamic_cast<QApplication *>(target)->exec();
         return;
-    }
-    if (methodIdView == "QApplication_exit_int")
-    {
+    case 6:
         dynamic_cast<QApplication *>(target)->exit(static_cast<qint32>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QApplication_quitOnLastWindowClosed")
-    {
+    case 7:
         *returnValue = dynamic_cast<QApplication *>(target)->quitOnLastWindowClosed();
         return;
-    }
-    if (methodIdView == "QApplication_setQuitOnLastWindowClosed_bool")
-    {
+    case 8:
         dynamic_cast<QApplication *>(target)->setQuitOnLastWindowClosed(static_cast<bool>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QBoxLayout_@new_QBoxLayoutDirection")
-    {
+    case 9:
         *returnValue = new QBoxLayout(static_cast<QBoxLayout::Direction>(static_cast<qint64>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QBoxLayout_addLayout_QLayout_int")
-    {
+    case 10:
         dynamic_cast<QBoxLayout *>(target)->addLayout(dynamic_cast<QLayout *>(static_cast<QObject *>(parameters[0])), static_cast<qint32>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QBoxLayout_addStretch_int")
-    {
+    case 11:
         dynamic_cast<QBoxLayout *>(target)->addStretch(static_cast<qint32>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QBoxLayout_addWidget_QWidget_int_QtAlignment")
-    {
+    case 12:
         dynamic_cast<QBoxLayout *>(target)->addWidget(dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[0])), static_cast<qint32>(parameters[1]), static_cast<Qt::AlignmentFlag>(static_cast<qint64>(parameters[2])));
         return;
-    }
-    if (methodIdView == "QcAbstractItemModel_Unmanaged_@new_nint_nint")
-    {
+    case 13:
         *returnValue = new QcAbstractItemModel(static_cast<void*>(parameters[0]), static_cast<void*>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QcAbstractItemModel_Unmanaged_emitDataChanged_CModelIndex_CModelIndex")
-    {
+    case 14:
         dynamic_cast<QcAbstractItemModel *>(target)->emitDataChanged(parameters[0].ToCustomType<CModelIndex>(), parameters[1].ToCustomType<CModelIndex>());
         return;
-    }
-    if (methodIdView == "QcAbstractItemModel_Unmanaged_managedHandle")
-    {
+    case 15:
         *returnValue = dynamic_cast<QcAbstractItemModel *>(target)->managedHandle();
         return;
-    }
-    if (methodIdView == "QcSignalRouter_Unmanaged_@new_delegate* unmanaged<QObjectStar, byte*, void>")
-    {
+    case 16:
         *returnValue = new QcSignalRouter(reinterpret_cast<void (*)(QObject *, const char *)>(static_cast<void *>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QcSignalRouter_Unmanaged_connectEventsCore_QObjectStar")
-    {
+    case 17:
         dynamic_cast<QcSignalRouter *>(target)->connectEventsCore(static_cast<QObject *>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QcSignalRouter_Unmanaged_connectSignalCore_QObjectStar_byte*")
-    {
+    case 18:
         dynamic_cast<QcSignalRouter *>(target)->connectSignalCore(static_cast<QObject *>(parameters[0]), static_cast<char *>(static_cast<void *>(parameters[1])));
         return;
-    }
-    if (methodIdView == "QcSynchronizationContext_Unmanaged_@new_delegate* unmanaged<nint, nint, void>")
-    {
+    case 19:
         *returnValue = new QcSynchronizationContext(reinterpret_cast<void (*)(void *, void *)>(static_cast<void *>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QcSynchronizationContext_Unmanaged_postCallback_nint_nint")
-    {
+    case 20:
         dynamic_cast<QcSynchronizationContext *>(target)->postCallback(static_cast<void*>(parameters[0]), static_cast<void*>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QFormLayout_@new")
-    {
+    case 21:
         *returnValue = new QFormLayout();
         return;
-    }
-    if (methodIdView == "QFormLayout_addRow_string_QLayout")
-    {
+    case 22:
         dynamic_cast<QFormLayout *>(target)->addRow(static_cast<QString>(parameters[0]), dynamic_cast<QLayout *>(static_cast<QObject *>(parameters[1])));
         return;
-    }
-    if (methodIdView == "QFormLayout_addRow_string_QWidget")
-    {
+    case 23:
         dynamic_cast<QFormLayout *>(target)->addRow(static_cast<QString>(parameters[0]), dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[1])));
         return;
-    }
-    if (methodIdView == "QFrame_@new")
-    {
+    case 24:
         *returnValue = new QFrame();
         return;
-    }
-    if (methodIdView == "QGridLayout_@new")
-    {
+    case 25:
         *returnValue = new QGridLayout();
         return;
-    }
-    if (methodIdView == "QGridLayout_addLayout_QLayout_int_int_int_int_QtAlignment")
-    {
+    case 26:
         dynamic_cast<QGridLayout *>(target)->addLayout(dynamic_cast<QLayout *>(static_cast<QObject *>(parameters[0])), static_cast<qint32>(parameters[1]), static_cast<qint32>(parameters[2]), static_cast<qint32>(parameters[3]), static_cast<qint32>(parameters[4]), static_cast<Qt::AlignmentFlag>(static_cast<qint64>(parameters[5])));
         return;
-    }
-    if (methodIdView == "QGridLayout_addWidget_QWidget_int_int_int_int_QtAlignment")
-    {
+    case 27:
         dynamic_cast<QGridLayout *>(target)->addWidget(dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[0])), static_cast<qint32>(parameters[1]), static_cast<qint32>(parameters[2]), static_cast<qint32>(parameters[3]), static_cast<qint32>(parameters[4]), static_cast<Qt::AlignmentFlag>(static_cast<qint64>(parameters[5])));
         return;
-    }
-    if (methodIdView == "QGridLayout_setColumnMinimumWidth_int_int")
-    {
+    case 28:
         dynamic_cast<QGridLayout *>(target)->setColumnMinimumWidth(static_cast<qint32>(parameters[0]), static_cast<qint32>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QGridLayout_setColumnStretch_int_int")
-    {
+    case 29:
         dynamic_cast<QGridLayout *>(target)->setColumnStretch(static_cast<qint32>(parameters[0]), static_cast<qint32>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QGridLayout_setRowMinimumHeight_int_int")
-    {
+    case 30:
         dynamic_cast<QGridLayout *>(target)->setRowMinimumHeight(static_cast<qint32>(parameters[0]), static_cast<qint32>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QGridLayout_setRowStretch_int_int")
-    {
+    case 31:
         dynamic_cast<QGridLayout *>(target)->setRowStretch(static_cast<qint32>(parameters[0]), static_cast<qint32>(parameters[1]));
         return;
-    }
-    if (methodIdView == "QGroupBox_@new")
-    {
+    case 32:
         *returnValue = new QGroupBox();
         return;
-    }
-    if (methodIdView == "QGroupBox_setTitle_string")
-    {
+    case 33:
         dynamic_cast<QGroupBox *>(target)->setTitle(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QGroupBox_title")
-    {
+    case 34:
         *returnValue = dynamic_cast<QGroupBox *>(target)->title();
         return;
-    }
-    if (methodIdView == "QHBoxLayout_@new")
-    {
+    case 35:
         *returnValue = new QHBoxLayout();
         return;
-    }
-    if (methodIdView == "QLabel_@new")
-    {
+    case 36:
         *returnValue = new QLabel();
         return;
-    }
-    if (methodIdView == "QLabel_setText_string")
-    {
+    case 37:
         dynamic_cast<QLabel *>(target)->setText(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QLabel_text")
-    {
+    case 38:
         *returnValue = dynamic_cast<QLabel *>(target)->text();
         return;
-    }
-    if (methodIdView == "QLineEdit_@new")
-    {
+    case 39:
         *returnValue = new QLineEdit();
         return;
-    }
-    if (methodIdView == "QLineEdit_placeholderText")
-    {
+    case 40:
         *returnValue = dynamic_cast<QLineEdit *>(target)->placeholderText();
         return;
-    }
-    if (methodIdView == "QLineEdit_setPlaceholderText_string")
-    {
+    case 41:
         dynamic_cast<QLineEdit *>(target)->setPlaceholderText(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QLineEdit_setText_string")
-    {
+    case 42:
         dynamic_cast<QLineEdit *>(target)->setText(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QLineEdit_text")
-    {
+    case 43:
         *returnValue = dynamic_cast<QLineEdit *>(target)->text();
         return;
-    }
-    if (methodIdView == "QMainWindow_@new")
-    {
+    case 44:
         *returnValue = new QMainWindow();
         return;
-    }
-    if (methodIdView == "QMainWindow_centralWidget")
-    {
+    case 45:
         *returnValue = dynamic_cast<QMainWindow *>(target)->centralWidget();
         return;
-    }
-    if (methodIdView == "QMainWindow_resize_Size")
-    {
+    case 46:
         dynamic_cast<QMainWindow *>(target)->resize(static_cast<QSize>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QMainWindow_setCentralWidget_QWidget")
-    {
+    case 47:
         dynamic_cast<QMainWindow *>(target)->setCentralWidget(dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QMainWindow_setWindowTitle_string")
-    {
+    case 48:
         dynamic_cast<QMainWindow *>(target)->setWindowTitle(static_cast<QString>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QMainWindow_size")
-    {
+    case 49:
         *returnValue = dynamic_cast<QMainWindow *>(target)->size();
         return;
-    }
-    if (methodIdView == "QMainWindow_windowTitle")
-    {
+    case 50:
         *returnValue = dynamic_cast<QMainWindow *>(target)->windowTitle();
         return;
-    }
-    if (methodIdView == "QPushButton_@new")
-    {
+    case 51:
         *returnValue = new QPushButton();
         return;
-    }
-    if (methodIdView == "QTreeView_@new")
-    {
+    case 52:
         *returnValue = new QTreeView();
         return;
-    }
-    if (methodIdView == "QTreeView_rootIsDecorated")
-    {
+    case 53:
         *returnValue = dynamic_cast<QTreeView *>(target)->rootIsDecorated();
         return;
-    }
-    if (methodIdView == "QTreeView_setRootIsDecorated_bool")
-    {
+    case 54:
         dynamic_cast<QTreeView *>(target)->setRootIsDecorated(static_cast<bool>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QVBoxLayout_@new")
-    {
+    case 55:
         *returnValue = new QVBoxLayout();
         return;
-    }
-    if (methodIdView == "QWidget_@new")
-    {
+    case 56:
         *returnValue = new QWidget();
         return;
-    }
-    if (methodIdView == "QWidget_isVisible")
-    {
+    case 57:
         *returnValue = dynamic_cast<QWidget *>(target)->isVisible();
         return;
-    }
-    if (methodIdView == "QWidget_layout")
-    {
+    case 58:
         *returnValue = dynamic_cast<QWidget *>(target)->layout();
         return;
-    }
-    if (methodIdView == "QWidget_setLayout_QLayout")
-    {
+    case 59:
         dynamic_cast<QWidget *>(target)->setLayout(dynamic_cast<QLayout *>(static_cast<QObject *>(parameters[0])));
         return;
-    }
-    if (methodIdView == "QWidget_setVisible_bool")
-    {
+    case 60:
         dynamic_cast<QWidget *>(target)->setVisible(static_cast<bool>(parameters[0]));
         return;
-    }
-    if (methodIdView == "QWidget_show")
-    {
+    case 61:
         dynamic_cast<QWidget *>(target)->show();
         return;
+    default:
+        qFatal("Unknown methodId: %s, methodId");
     }
-    qFatal("Unknown methodId: %s, methodId");
 }

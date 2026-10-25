@@ -24,10 +24,9 @@ namespace QtChungus.Internal
 
             var view = QAbstractItemView.FromHandle(WidgetHandle);
 
-            var oldNativeModel = view.Model;
-            if(oldNativeModel.Handle != default && oldNativeModel.Handle.Inherits(nameof(QcAbstractItemModel)))
+            if(view.Model.Handle.Is<QcAbstractItemModel_Unmanaged>(out var oldModel))
             {
-                ((QcAbstractItemModel_Unmanaged)oldNativeModel).ManagedModel.Dispose();
+                oldModel.ManagedModel.Dispose();
             }
 
             var newList = ViewModelGetMethod(sender);

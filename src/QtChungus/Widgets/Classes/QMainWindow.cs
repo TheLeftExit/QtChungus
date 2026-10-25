@@ -13,7 +13,8 @@ public unsafe readonly struct QMainWindow
     : IQContainerWidget, IQWindow
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QMainWindow"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QMainWindow";
 
     public static implicit operator QWidget(QMainWindow source) => QWidget.FromHandle(source.Handle);
     public static explicit operator QMainWindow(QWidget source) => QMainWindow.FromHandle(source.Handle);
@@ -25,68 +26,68 @@ public unsafe readonly struct QMainWindow
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QMainWindow_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(44, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private QWidget centralWidget()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QMainWindow_centralWidget", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(45, this.Handle, out var result, parameters);
         return QWidget.FromHandle(result.Get<QObjectStar>());
     }
     private void resize(Size value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QMainWindow_resize_Size", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(46, this.Handle, out var result, parameters);
     }
     private void setCentralWidget(QWidget value)
     {
         CVariant* parameters = stackalloc CVariant[] { value.Handle };
-        QObjectStar.QcInvoke("QMainWindow_setCentralWidget_QWidget", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(47, this.Handle, out var result, parameters);
     }
     private void setWindowTitle(string value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QMainWindow_setWindowTitle_string", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(48, this.Handle, out var result, parameters);
     }
     private Size size()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QMainWindow_size", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(49, this.Handle, out var result, parameters);
         return result.Get<Size>();
     }
     private string windowTitle()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QMainWindow_windowTitle", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(50, this.Handle, out var result, parameters);
         return result.Get<string>();
     }
     private bool isVisible()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_isVisible", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(57, this.Handle, out var result, parameters);
         return result.Get<bool>();
     }
     private QLayout layout()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_layout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(58, this.Handle, out var result, parameters);
         return QLayout.FromHandle(result.Get<QObjectStar>());
     }
     private void setLayout(QLayout value)
     {
         CVariant* parameters = stackalloc CVariant[] { value.Handle };
-        QObjectStar.QcInvoke("QWidget_setLayout_QLayout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(59, this.Handle, out var result, parameters);
     }
     private void setVisible(bool value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QWidget_setVisible_bool", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(60, this.Handle, out var result, parameters);
     }
     private void show()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_show", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(61, this.Handle, out var result, parameters);
     }
 #nullable restore
 

@@ -13,7 +13,8 @@ public unsafe readonly struct QApplication
     : IQObject, IDisposable
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QApplication"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QApplication";
 
     public static implicit operator QObject(QApplication source) => QObject.FromHandle(source.Handle);
     public static explicit operator QApplication(QObject source) => QApplication.FromHandle(source.Handle);
@@ -22,30 +23,30 @@ public unsafe readonly struct QApplication
     private static QObjectStar @new(int* argc, byte** argv)
     {
         CVariant* parameters = stackalloc CVariant[] { (nint)argc, (nint)argv };
-        QObjectStar.QcInvoke("QApplication_@new_int*_byte**", default, out var result, parameters);
+        QObjectStar.QcInvoke(4, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private int exec()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QApplication_exec", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(5, this.Handle, out var result, parameters);
         return result.Get<int>();
     }
     private void exit(int returnCode)
     {
         CVariant* parameters = stackalloc CVariant[] { returnCode };
-        QObjectStar.QcInvoke("QApplication_exit_int", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(6, this.Handle, out var result, parameters);
     }
     private bool quitOnLastWindowClosed()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QApplication_quitOnLastWindowClosed", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(7, this.Handle, out var result, parameters);
         return result.Get<bool>();
     }
     private void setQuitOnLastWindowClosed(bool value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QApplication_setQuitOnLastWindowClosed_bool", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(8, this.Handle, out var result, parameters);
     }
 #nullable restore
 

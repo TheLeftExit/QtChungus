@@ -13,7 +13,8 @@ public unsafe readonly struct QLineEdit
     : IQChildWidget
 #endregion
 {
-    public QObjectStar Handle { get; init => field = this.ValidateHandle(value, "QLineEdit"); }
+    public QObjectStar Handle { get; init => field = this.ValidateHandle(value); }
+    static string IQObject.ClassName => "QLineEdit";
 
     public static implicit operator QWidget(QLineEdit source) => QWidget.FromHandle(source.Handle);
     public static explicit operator QLineEdit(QWidget source) => QLineEdit.FromHandle(source.Handle);
@@ -25,57 +26,57 @@ public unsafe readonly struct QLineEdit
     private static QObjectStar @new()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QLineEdit_@new", default, out var result, parameters);
+        QObjectStar.QcInvoke(39, default, out var result, parameters);
         return result.Get<QObjectStar>();
     }
     private string placeholderText()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QLineEdit_placeholderText", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(40, this.Handle, out var result, parameters);
         return result.Get<string>();
     }
     private void setPlaceholderText(string value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QLineEdit_setPlaceholderText_string", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(41, this.Handle, out var result, parameters);
     }
     private void setText(string value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QLineEdit_setText_string", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(42, this.Handle, out var result, parameters);
     }
     private string text()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QLineEdit_text", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(43, this.Handle, out var result, parameters);
         return result.Get<string>();
     }
     private bool isVisible()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_isVisible", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(57, this.Handle, out var result, parameters);
         return result.Get<bool>();
     }
     private QLayout layout()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_layout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(58, this.Handle, out var result, parameters);
         return QLayout.FromHandle(result.Get<QObjectStar>());
     }
     private void setLayout(QLayout value)
     {
         CVariant* parameters = stackalloc CVariant[] { value.Handle };
-        QObjectStar.QcInvoke("QWidget_setLayout_QLayout", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(59, this.Handle, out var result, parameters);
     }
     private void setVisible(bool value)
     {
         CVariant* parameters = stackalloc CVariant[] { value };
-        QObjectStar.QcInvoke("QWidget_setVisible_bool", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(60, this.Handle, out var result, parameters);
     }
     private void show()
     {
         CVariant* parameters = stackalloc CVariant[] {  };
-        QObjectStar.QcInvoke("QWidget_show", this.Handle, out var result, parameters);
+        QObjectStar.QcInvoke(61, this.Handle, out var result, parameters);
     }
 #nullable restore
 
