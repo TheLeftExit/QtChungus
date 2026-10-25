@@ -13,7 +13,7 @@ class QcSignalRouter : public QObject
     Q_OBJECT
 public:
     QcSignalRouter(void (*route)(QObject *, const char *)) : m_route(route) {}
-    void ConnectSignalCore(QObject *target, char *signalName)
+    void connectSignalCore(QObject *target, char *signalName)
     {
         QMetaMethod signal = target->metaObject()->method(target->metaObject()->indexOfMethod(signalName));
         int slotIndex = QcSignalRouter::staticMetaObject.indexOfSlot("RouteSignal()");
@@ -25,7 +25,7 @@ public:
             slot,
             static_cast<Qt::ConnectionType>(Qt::ConnectionType::DirectConnection | Qt::ConnectionType::UniqueConnection));
     }
-    void ConnectEventsCore(QObject *target)
+    void connectEventsCore(QObject *target)
     {
         target->installEventFilter(this);
     }

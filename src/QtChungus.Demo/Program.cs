@@ -2,9 +2,11 @@
 using QtChungus;
 using QtChungus.Internal;
 
-QcApplication.Run(async () =>
+using var qApp = new QApplication();
+//SynchronizationContext.SetSynchronizationContext(new QcSynchronizationContext());
+qApp.Run(async () =>
 {
-    var mainWindow = QObjectStar.Create<QMainWindow>() with
+    var mainWindow = new QMainWindow() with
     {
         Size = new(500, 300),
 #if DEBUG
@@ -13,8 +15,8 @@ QcApplication.Run(async () =>
         WindowTitle = "QtChungus.Demo (RELEASE)",
 #endif
     };
-    var rootLayout = mainWindow.UseLayout<QBoxLayout>() with { Direction = QBoxLayoutDirection.TopToBottom };
-    var row1Layout = rootLayout.AddLayout<QBoxLayout>() with { Direction = QBoxLayoutDirection.LeftToRight };
+    var rootLayout = mainWindow.UseVBoxLayout();
+    var row1Layout = rootLayout.AddLayout<QHBoxLayout>();
     var button = row1Layout.AddWidget<QPushButton>() with 
     {
         Text = "Click me!"
@@ -36,6 +38,7 @@ QcApplication.Run(async () =>
     });
 
     await view.ShowAsync(new MyViewModel());
+    return 0;
 });
 
 public class MyClass

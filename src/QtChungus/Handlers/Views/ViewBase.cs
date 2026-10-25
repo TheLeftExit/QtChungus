@@ -1,14 +1,14 @@
 namespace QtChungus;
 
 public abstract class ViewBase<TWindow, TViewModel> : IView<TViewModel>
-    where TWindow : struct, IQWidget
+    where TWindow : struct, IQWindow
     where TViewModel : class
 {
     private readonly SignalManager<TWindow, TViewModel> _view;
 
     protected ViewBase()
     {
-        var window = QObjectStar.Create<TWindow>();
+        var window = new TWindow();
         _view = new(window);
         Configure(window, _view);
     }

@@ -14,11 +14,13 @@
 #include <QTreeView>
 #include <QGroupBox>
 #include <QBoxLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QGridLayout>
 #include <QFormLayout>
-#include "QcAbstractItemModel.h"
-#include "QcSignalRouter.h"
-#include "QcSynchronizationContext.h"
+#include "QcAbstractItemModel.hxx"
+#include "QcSignalRouter.hxx"
+#include "QcSynchronizationContext.hxx"
 extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *returnValue, CVariant *parameters)
 {
     std::string_view methodIdView{methodId};
@@ -57,6 +59,16 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
         dynamic_cast<QApplication *>(target)->exit(static_cast<qint32>(parameters[0]));
         return;
     }
+    if (methodIdView == "QApplication_quitOnLastWindowClosed")
+    {
+        *returnValue = dynamic_cast<QApplication *>(target)->quitOnLastWindowClosed();
+        return;
+    }
+    if (methodIdView == "QApplication_setQuitOnLastWindowClosed_bool")
+    {
+        dynamic_cast<QApplication *>(target)->setQuitOnLastWindowClosed(static_cast<bool>(parameters[0]));
+        return;
+    }
     if (methodIdView == "QBoxLayout_@new_QBoxLayoutDirection")
     {
         *returnValue = new QBoxLayout(static_cast<QBoxLayout::Direction>(static_cast<qint64>(parameters[0])));
@@ -77,44 +89,44 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
         dynamic_cast<QBoxLayout *>(target)->addWidget(dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[0])), static_cast<qint32>(parameters[1]), static_cast<Qt::AlignmentFlag>(static_cast<qint64>(parameters[2])));
         return;
     }
-    if (methodIdView == "QcAbstractItemModel_@new_nint_nint")
+    if (methodIdView == "QcAbstractItemModel_Unmanaged_@new_nint_nint")
     {
         *returnValue = new QcAbstractItemModel(static_cast<void*>(parameters[0]), static_cast<void*>(parameters[1]));
         return;
     }
-    if (methodIdView == "QcAbstractItemModel_emitDataChanged_CModelIndex_CModelIndex")
+    if (methodIdView == "QcAbstractItemModel_Unmanaged_emitDataChanged_CModelIndex_CModelIndex")
     {
         dynamic_cast<QcAbstractItemModel *>(target)->emitDataChanged(parameters[0].ToCustomType<CModelIndex>(), parameters[1].ToCustomType<CModelIndex>());
         return;
     }
-    if (methodIdView == "QcAbstractItemModel_managedHandle")
+    if (methodIdView == "QcAbstractItemModel_Unmanaged_managedHandle")
     {
         *returnValue = dynamic_cast<QcAbstractItemModel *>(target)->managedHandle();
         return;
     }
-    if (methodIdView == "QcSignalRouter_@new_delegate* unmanaged<QObjectStar, byte*, void>")
+    if (methodIdView == "QcSignalRouter_Unmanaged_@new_delegate* unmanaged<QObjectStar, byte*, void>")
     {
         *returnValue = new QcSignalRouter(reinterpret_cast<void (*)(QObject *, const char *)>(static_cast<void *>(parameters[0])));
         return;
     }
-    if (methodIdView == "QcSignalRouter_ConnectEventsCore_QObjectStar")
+    if (methodIdView == "QcSignalRouter_Unmanaged_connectEventsCore_QObjectStar")
     {
-        dynamic_cast<QcSignalRouter *>(target)->ConnectEventsCore(static_cast<QObject *>(parameters[0]));
+        dynamic_cast<QcSignalRouter *>(target)->connectEventsCore(static_cast<QObject *>(parameters[0]));
         return;
     }
-    if (methodIdView == "QcSignalRouter_ConnectSignalCore_QObjectStar_byte*")
+    if (methodIdView == "QcSignalRouter_Unmanaged_connectSignalCore_QObjectStar_byte*")
     {
-        dynamic_cast<QcSignalRouter *>(target)->ConnectSignalCore(static_cast<QObject *>(parameters[0]), static_cast<char *>(static_cast<void *>(parameters[1])));
+        dynamic_cast<QcSignalRouter *>(target)->connectSignalCore(static_cast<QObject *>(parameters[0]), static_cast<char *>(static_cast<void *>(parameters[1])));
         return;
     }
-    if (methodIdView == "QcSynchronizationContext_@new_delegate* unmanaged<nint, nint, void>")
+    if (methodIdView == "QcSynchronizationContext_Unmanaged_@new_delegate* unmanaged<nint, nint, void>")
     {
         *returnValue = new QcSynchronizationContext(reinterpret_cast<void (*)(void *, void *)>(static_cast<void *>(parameters[0])));
         return;
     }
-    if (methodIdView == "QcSynchronizationContext_PostCallback_nint_nint")
+    if (methodIdView == "QcSynchronizationContext_Unmanaged_postCallback_nint_nint")
     {
-        dynamic_cast<QcSynchronizationContext *>(target)->PostCallback(static_cast<void*>(parameters[0]), static_cast<void*>(parameters[1]));
+        dynamic_cast<QcSynchronizationContext *>(target)->postCallback(static_cast<void*>(parameters[0]), static_cast<void*>(parameters[1]));
         return;
     }
     if (methodIdView == "QFormLayout_@new")
@@ -130,6 +142,11 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
     if (methodIdView == "QFormLayout_addRow_string_QWidget")
     {
         dynamic_cast<QFormLayout *>(target)->addRow(static_cast<QString>(parameters[0]), dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[1])));
+        return;
+    }
+    if (methodIdView == "QFrame_@new")
+    {
+        *returnValue = new QFrame();
         return;
     }
     if (methodIdView == "QGridLayout_@new")
@@ -182,6 +199,11 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
         *returnValue = dynamic_cast<QGroupBox *>(target)->title();
         return;
     }
+    if (methodIdView == "QHBoxLayout_@new")
+    {
+        *returnValue = new QHBoxLayout();
+        return;
+    }
     if (methodIdView == "QLabel_@new")
     {
         *returnValue = new QLabel();
@@ -232,14 +254,39 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
         *returnValue = dynamic_cast<QMainWindow *>(target)->centralWidget();
         return;
     }
+    if (methodIdView == "QMainWindow_resize_Size")
+    {
+        dynamic_cast<QMainWindow *>(target)->resize(static_cast<QSize>(parameters[0]));
+        return;
+    }
     if (methodIdView == "QMainWindow_setCentralWidget_QWidget")
     {
         dynamic_cast<QMainWindow *>(target)->setCentralWidget(dynamic_cast<QWidget *>(static_cast<QObject *>(parameters[0])));
         return;
     }
+    if (methodIdView == "QMainWindow_setWindowTitle_string")
+    {
+        dynamic_cast<QMainWindow *>(target)->setWindowTitle(static_cast<QString>(parameters[0]));
+        return;
+    }
+    if (methodIdView == "QMainWindow_size")
+    {
+        *returnValue = dynamic_cast<QMainWindow *>(target)->size();
+        return;
+    }
+    if (methodIdView == "QMainWindow_windowTitle")
+    {
+        *returnValue = dynamic_cast<QMainWindow *>(target)->windowTitle();
+        return;
+    }
     if (methodIdView == "QPushButton_@new")
     {
         *returnValue = new QPushButton();
+        return;
+    }
+    if (methodIdView == "QTreeView_@new")
+    {
+        *returnValue = new QTreeView();
         return;
     }
     if (methodIdView == "QTreeView_rootIsDecorated")
@@ -252,9 +299,19 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
         dynamic_cast<QTreeView *>(target)->setRootIsDecorated(static_cast<bool>(parameters[0]));
         return;
     }
+    if (methodIdView == "QVBoxLayout_@new")
+    {
+        *returnValue = new QVBoxLayout();
+        return;
+    }
     if (methodIdView == "QWidget_@new")
     {
         *returnValue = new QWidget();
+        return;
+    }
+    if (methodIdView == "QWidget_isVisible")
+    {
+        *returnValue = dynamic_cast<QWidget *>(target)->isVisible();
         return;
     }
     if (methodIdView == "QWidget_layout")
@@ -265,6 +322,11 @@ extern "C" void QcInvoke(const char *methodId, QObject *target, CVariant *return
     if (methodIdView == "QWidget_setLayout_QLayout")
     {
         dynamic_cast<QWidget *>(target)->setLayout(dynamic_cast<QLayout *>(static_cast<QObject *>(parameters[0])));
+        return;
+    }
+    if (methodIdView == "QWidget_setVisible_bool")
+    {
+        dynamic_cast<QWidget *>(target)->setVisible(static_cast<bool>(parameters[0]));
         return;
     }
     if (methodIdView == "QWidget_show")

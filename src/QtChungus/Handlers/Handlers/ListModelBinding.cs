@@ -22,14 +22,17 @@ namespace QtChungus.Internal
         {
             if (propertyName is not null && propertyName != ViewModelPropertyName) return;
 
-            var oldNativeModel = WidgetHandle.GetProperty<QObjectStar>("model");
-            var oldModel = oldNativeModel.Handle != 0 ? QcAbstractItemModel.FromHandle(oldNativeModel.Handle) : null;
+            var view = QAbstractItemView.FromHandle(WidgetHandle);
+
+            var oldNativeModel = view.Model;
+            if(oldNativeModel.Handle != default && oldNativeModel.Handle.Inherits(nameof(QcAbstractItemModel)))
+            {
+                ((QcAbstractItemModel_Unmanaged)oldNativeModel).ManagedModel.Dispose();
+            }
 
             var newList = ViewModelGetMethod(sender);
             var newModel = new QListModel<TRow>(newList, ModelColumns);
-            WidgetHandle.SetProperty<QObjectStar>("model", newModel.Handle);
-
-            oldModel?.Dispose();
+            view.Model = newModel.UnmanagedModel;
         }
     }
 
@@ -48,7 +51,7 @@ namespace QtChungus.Internal
             _columns.Add(new QModelColumn<TRow, TValue>(accessor, caption));
         }
 
-        public ListModelBinding<TViewModel, TWidget, TRow> Build<TWidget>() where TWidget : struct, IQWidget
+        public ListModelBinding<TViewModel, TWidget, TRow> Build<TWidget>() where TWidget : struct, IQObject
         {
             return new ListModelBinding<TViewModel, TWidget, TRow>
             {
@@ -72,7 +75,7 @@ namespace QtChungus
             Action<ListModelBindingBuilder<TViewModel, TRow>> configure
         )
             where TViewModel : class
-            where TWidget : struct, IQWidget
+            where TWidget : struct, IQObject
             where TRow : class
         {
             if (!ExpressionHelper.TryParseProperty(viewModelPropertySelector, out var viewModelProperty))

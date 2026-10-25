@@ -9,3 +9,8 @@ extern "C" QObject *QcParent(QObject *target)
 {
     return target->parent();
 }
+
+extern "C" bool QcInherits(QObject *target, const char *className)
+{
+    return !target || target->inherits(className);
+}

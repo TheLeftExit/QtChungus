@@ -10,7 +10,7 @@ class QcSynchronizationContext : public QObject
     Q_OBJECT
 public:
     QcSynchronizationContext(void (*invoke)(void *, void *)) : m_invoke(invoke) {}
-    void PostCallback(void *arg1, void *arg2)
+    void postCallback(void *arg1, void *arg2)
     {
         QMetaObject::invokeMethod(
             this,

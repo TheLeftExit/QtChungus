@@ -14,9 +14,9 @@ qt_add_library(QtGlueObj OBJECT
     QcMethods.cxx
     Methods.g.cxx
 
-    QcSynchronizationContext.h
-    QcSignalRouter.h
-    QcAbstractItemModel.h
+    QcSynchronizationContext.hxx
+    QcSignalRouter.hxx
+    QcAbstractItemModel.hxx
 
     CVariant.cxx
     CModelIndex.cxx

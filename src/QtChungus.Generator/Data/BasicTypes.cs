@@ -7,6 +7,7 @@ public static partial class QTypes
     public static QBasicType QString = new("string", "QString");
     public static QBasicType QObjectStar = new("QObjectStar", "QObject *");
     public static QBasicType VoidStar = new("nint", "void*");
+    public static QBasicType QSize = new("Size", "QSize");
 
     public static QEnumType QtAlignment = new("Qt::AlignmentFlag");
     public static QEnumType QBoxLayoutDirection = new("QBoxLayout::Direction");

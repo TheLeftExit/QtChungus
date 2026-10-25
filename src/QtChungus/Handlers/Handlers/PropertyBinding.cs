@@ -7,7 +7,7 @@ namespace QtChungus.Internal
         where TViewModel : class
         where TWidget : struct, IQObject
     {
-        public required QObjectStar WidgetHandle { private get; init; }
+        public required TWidget Widget { private get; init; }
         public required string? SignalName { private get; init; }
         public required WidgetGetMethod<TWidget, TValue> WidgetGetMethod { private get; init; }
         public required WidgetSetMethod<TWidget, TValue>? WidgetSetMethod { private get; init; }
@@ -23,7 +23,7 @@ namespace QtChungus.Internal
 
         void ISignalHandler<TViewModel>.ProcessSignal(QObjectStar sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
-            if (sender != WidgetHandle) return;
+            if (sender != Widget.Handle) return;
             if (!name.SequenceEqual(SignalName)) return;
 
             Push(viewModel, PushDirection.ToViewModel);
@@ -41,16 +41,14 @@ namespace QtChungus.Internal
             if (direction == PushDirection.ToWidget && WidgetSetMethod is null) return;
             if (direction == PushDirection.ToViewModel && ViewModelSetMethod is null) return;
 
-            var widget = new TWidget { Handle = WidgetHandle };
-
-            var widgetValue = WidgetGetMethod(widget);
+            var widgetValue = WidgetGetMethod(Widget);
             var viewModelValue = ViewModelGetMethod(viewModel);
             if (EqualityComparer<TValue>.Default.Equals(widgetValue, viewModelValue)) return;
 
             switch (direction)
             {
                 case PushDirection.ToWidget:
-                    WidgetSetMethod!(widget, viewModelValue);
+                    WidgetSetMethod!(Widget, viewModelValue);
                     break;
                 case PushDirection.ToViewModel:
                     ViewModelSetMethod!(viewModel, widgetValue);
@@ -73,7 +71,7 @@ namespace QtChungus
             Expression<Func<TViewModel, TValue>> viewModelPropertySelector
         )
             where TViewModel : class
-            where TWidget : struct, IQWidget
+            where TWidget : struct, IQObject
         {
             if (!ExpressionHelper.TryParseProperty(widgetPropertySelector, out var controlProperty))
             {
@@ -92,7 +90,7 @@ namespace QtChungus
 
             var handler = new PropertyBinding<TViewModel, TWidget, TValue>
             {
-                WidgetHandle = widget.Handle,
+                Widget = widget,
                 WidgetGetMethod = controlProperty.GetMethod!.CreateDelegate<WidgetGetMethod<TWidget, TValue>>(),
                 WidgetSetMethod = controlProperty.SetMethod?.CreateDelegate<WidgetSetMethod<TWidget, TValue>>(),
                 SignalName = signalInfo?.SignalName,

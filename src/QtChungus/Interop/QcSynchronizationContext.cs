@@ -2,18 +2,13 @@ using System.Runtime.InteropServices;
 
 namespace QtChungus.Internal;
 
-public unsafe partial class QcSynchronizationContext : SynchronizationContext
+public unsafe partial class QcSynchronizationContext : SynchronizationContext, IDisposable
 {
-    [LibraryImport(QObject.libraryName)]
-    private static partial void PostCallback(nint callbackHandle, nint stateHandle, nint context);
-    [LibraryImport(QObject.libraryName)]
-    private static partial nint CreateSynchronizationContext(delegate* unmanaged<nint, nint, void> invoke);
-
-    private nint _context;
+    private readonly QcSynchronizationContext_Unmanaged _context;
 
     public QcSynchronizationContext()
     {
-        _context = CreateSynchronizationContext(&InvokeCallbackCore);
+        _context = new(&InvokeCallbackCore);
     }
 
     [UnmanagedCallersOnly]
@@ -25,8 +20,14 @@ public unsafe partial class QcSynchronizationContext : SynchronizationContext
         callbackGcHandle.Free();
         stateGcHandle.Free();
     }
+
     public override void Post(SendOrPostCallback d, object? state)
     {
-        PostCallback((nint)GCHandle.Alloc(d), (nint)GCHandle.Alloc(state), _context);
+        _context.PostCallback((nint)GCHandle.Alloc(d), (nint)GCHandle.Alloc(state));
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
     }
 }

@@ -9,16 +9,18 @@
 
 typedef void *GCHandle;
 
+class QcAbstractItemModel;
+
 struct QcAbstractItemModelVMT
 {
-    qint32 (*rowCount)(GCHandle, CModelIndex);
-    CVariant (*data)(GCHandle, CModelIndex, qint32);
-    CVariant (*headerData)(GCHandle, qint32, qint32, qint32);
-    qint32 (*columnCount)(GCHandle, CModelIndex);
-    CModelIndex (*index)(GCHandle, qint32, qint32, CModelIndex);
-    CModelIndex (*parent)(GCHandle, CModelIndex);
-    qint32 (*flags)(GCHandle, CModelIndex);
-    qint32 (*setData)(GCHandle, CModelIndex, CVariant, qint32);
+    qint32 (*rowCount)(const QcAbstractItemModel *, CModelIndex);
+    CVariant (*data)(const QcAbstractItemModel *, CModelIndex, qint32);
+    CVariant (*headerData)(const QcAbstractItemModel *, qint32, qint32, qint32);
+    qint32 (*columnCount)(const QcAbstractItemModel *, CModelIndex);
+    CModelIndex (*index)(const QcAbstractItemModel *, qint32, qint32, CModelIndex);
+    CModelIndex (*parent)(const QcAbstractItemModel *, CModelIndex);
+    qint32 (*flags)(const QcAbstractItemModel *, CModelIndex);
+    qint32 (*setData)(const QcAbstractItemModel *, CModelIndex, CVariant, qint32);
 };
 
 class QcAbstractItemModel : public QAbstractItemModel
@@ -54,35 +56,35 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override
     {
-        return m_vmt.rowCount(m_managedHandle, parent);
+        return m_vmt.rowCount(this, parent);
     }
     QVariant data(const QModelIndex &index, int role) const override
     {
-        return m_vmt.data(m_managedHandle, index, role);
+        return m_vmt.data(this, index, role);
     }
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
-        return m_vmt.headerData(m_managedHandle, section, orientation, role);
+        return m_vmt.headerData(this, section, orientation, role);
     }
     int columnCount(const QModelIndex &parent) const override
     {
-        return m_vmt.columnCount(m_managedHandle, parent);
+        return m_vmt.columnCount(this, parent);
     }
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
     {
-        return createIndexPublic(m_vmt.index(m_managedHandle, row, column, parent));
+        return createIndexPublic(m_vmt.index(this, row, column, parent));
     }
     QModelIndex parent(const QModelIndex &index) const override
     {
-        return createIndexPublic(m_vmt.parent(m_managedHandle, index));
+        return createIndexPublic(m_vmt.parent(this, index));
     }
     Qt::ItemFlags flags(const QModelIndex &index) const override
     {
-        return static_cast<Qt::ItemFlag>(m_vmt.flags(m_managedHandle, index));
+        return static_cast<Qt::ItemFlag>(m_vmt.flags(this, index));
     }
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
     {
-        return m_vmt.setData(m_managedHandle, index, value, role);
+        return m_vmt.setData(this, index, value, role);
     }
 };
 

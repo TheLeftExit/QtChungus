@@ -7,13 +7,13 @@ namespace QtChungus.Internal
         where TViewModel : class
         where TWidget : struct, IQObject
     {
-        public required QObjectStar WidgetHandle { private get; init; }
+        public required TWidget Widget { private get; init; }
         public required string SignalName { private get; init; }
         public required ViewModelCommand<TViewModel> ViewModelCommandMethod { private get; init; }
 
         void ISignalHandler<TViewModel>.ProcessSignal(QObjectStar sender, ReadOnlySpan<char> name, TViewModel viewModel)
         {
-            if (sender != WidgetHandle) return;
+            if (sender != Widget.Handle) return;
             if (!name.SequenceEqual(SignalName)) return;
 
             ViewModelCommandMethod(viewModel);
@@ -60,7 +60,7 @@ namespace QtChungus
             {
                 SignalName = signalInfo.SignalName,
                 ViewModelCommandMethod = viewModelCommand.CreateDelegate<ViewModelCommand<TViewModel>>(),
-                WidgetHandle = widget.Handle
+                Widget = widget
             });
         }
     }

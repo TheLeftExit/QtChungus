@@ -3,7 +3,7 @@ using System.ComponentModel;
 namespace QtChungus;
 
 public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewModel>, IView<TViewModel>
-    where TWindow : struct, IQWidget
+    where TWindow : struct, IQWindow
     where TViewModel : class
 {
     private readonly TWindow _window;
@@ -17,7 +17,7 @@ public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewMod
 
     public void Dispose()
     {
-        Qt.qobject_delete(_window.Handle);
+        _window.Dispose();
     }
 
     public void AddSignalHandler(ISignalHandler<TViewModel> signalHandler)
@@ -35,7 +35,7 @@ public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewMod
             bindableViewModel.PropertyChanged += signalReceiver.OnPropertyChanged;
         }
 
-        Qt.qwidget_show(_window.Handle);
+        _window.Show();
         using var signalSubscription = QcSignalRouter.Subscribe(_window.Handle, signalReceiver);
         signalReceiver.OnPropertyChanged(viewModel, new PropertyChangedEventArgs(null));
         await WhenClosed();
@@ -79,7 +79,7 @@ public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewMod
 
         public Task WhenClosed()
         {
-            return Handle.GetProperty<bool>("visible") ? _tcs.Task : Task.CompletedTask;
+            return QWidget.FromHandle(Handle).Visible ? _tcs.Task : Task.CompletedTask;
         }
 
         public void ProcessSignal(QObjectStar sender, ReadOnlySpan<char> signalName)
@@ -93,7 +93,7 @@ public sealed class SignalManager<TWindow, TViewModel> : ISignalManager<TViewMod
         private async void ProcessCloseEvent()
         {
             await Task.Yield();
-            if (!Handle.GetProperty<bool>("visible"))
+            if (!QWidget.FromHandle(Handle).Visible)
             {
                 _tcs.SetResult();
             }

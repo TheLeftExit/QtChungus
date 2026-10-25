@@ -59,11 +59,21 @@ public partial class QObjectType : QType
     private static List<QObjectType> all = new();
 
     public QObjectType BaseType { get; }
-    public string IncludePath => CsName.StartsWith("Qc") ? $"\"{CsName}.h\"" : $"<{CsName}>";
+
+    public string IncludePath => CsName.StartsWith("Qc") ? $"\"{CppName}.hxx\"" : $"<{CppName}>";
+    public string Namespace => CsName.StartsWith("Qc") ? "QtChungus.Internal" : "QtChungus";
+    public string AccessModifier => CsName.StartsWith("Qc") ? "internal" : "public";
+
+
     public QMethod[] Methods => methods.Value;
     private Lazy<QMethod[]> methods;
 
-    public QObjectType(QObjectType baseType, Func<QObjectType, QMethod[]>? getMethods = null, [CallerMemberName] string name = null!) : base(name, name)
+    public QObjectType(
+        QObjectType baseType,
+        Func<QObjectType, QMethod[]>? getMethods = null,
+        [CallerMemberName] string csName = null!,
+        [CallerMemberName] string cppName = null!
+    ) : base(csName, cppName)
     {
         all.Add(this);
         BaseType = baseType;
@@ -76,7 +86,7 @@ public partial class QObjectType : QType
     public override string MarshalToCppVariant(string parameter) => parameter;
     public override string MarshalFromCppVariant(string parameter) => $"dynamic_cast<{CppName} *>({containerType.MarshalFromCppVariant(parameter)})";
     public override string MarshalToCsVariant(string parameter) => $"{parameter}.Handle";
-    public override string MarshalFromCsVariant(string parameter) => containerType.MarshalFromCsVariant(parameter);
+    public override string MarshalFromCsVariant(string parameter) => $"{CsName}.FromHandle({containerType.MarshalFromCsVariant(parameter)})";
 }
 
 public class QSpecialType(
@@ -126,14 +136,14 @@ public partial class QObjectType
 {
     public QMethod Method(QType? returnType, string name, params QParameter[] parameters)
     {
-        if (returnType is QObjectType) returnType = QTypes.QObjectStar;
+        if (name is "@new") returnType = QTypes.QObjectStar;
         return new(returnType, this, name, parameters);
     }
     //public QMethod Method(string name, params QParameter[] parameters) => Method(null, name, parameters);
     public QMethod Constructor(params QParameter[] parameters) => Method(this, "@new", parameters);
-    public QMethod[] Property(QType type, string name)
+    public QMethod[] Property(QType type, string getName, string? setName = null)
     {
-        var setName = $"set{char.ToUpper(name[0])}{name[1..]}";
-        return [Method(type, name), Method(null, setName, type["value"])];
+        setName ??= $"set{char.ToUpper(getName[0])}{getName[1..]}";
+        return [Method(type, getName), Method(null, setName, type["value"])];
     }
 }

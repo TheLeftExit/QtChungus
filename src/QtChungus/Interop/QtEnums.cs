@@ -1,8 +1,8 @@
 namespace QtChungus;
 
 // Enum definitions ripped from F12-ing them in the C++ editor in VS Code
-// Normalized to `int` for usage in P/Invokes
-public enum QtAlignment : int
+// Normalized to `long` for usage in P/Invokes
+public enum QtAlignment : long
 {
     AlignLeft = 0x0001,
     AlignLeading = AlignLeft,
@@ -26,7 +26,7 @@ public enum QtAlignment : int
     AlignCenter = AlignVCenter | AlignHCenter
 };
 
-public enum QtItemDataRole : int
+public enum QtItemDataRole : long
 {
     DisplayRole = 0,
     DecorationRole = 1,
@@ -48,13 +48,13 @@ public enum QtItemDataRole : int
     InitialSortOrderRole = 14,
 };
 
-public enum QtOrientation : int
+public enum QtOrientation : long
 {
     Horizontal = 0x1,
     Vertical = 0x2
 };
 
-public enum QtItemFlag : int
+public enum QtItemFlag : long
 {
     NoItemFlags = 0,
     ItemIsSelectable = 1,
@@ -70,7 +70,7 @@ public enum QtItemFlag : int
     Default = ItemIsSelectable | ItemIsEnabled
 };
 
-public enum QBoxLayoutDirection : int
+public enum QBoxLayoutDirection : long
 {
     LeftToRight = 0,
     RightToLeft = 1,
@@ -78,7 +78,7 @@ public enum QBoxLayoutDirection : int
     BottomToTop = 3
 }
 
-public enum QLayoutSizeConstraint : int
+public enum QLayoutSizeConstraint : long
 {
     SetDefaultConstraint,
     SetNoConstraint,
@@ -88,7 +88,7 @@ public enum QLayoutSizeConstraint : int
     SetMinAndMaxSize
 };
 
-public enum QtTextFormat
+public enum QtTextFormat : long
 {
     PlainText,
     RichText,

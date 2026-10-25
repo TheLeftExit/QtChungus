@@ -24,104 +24,90 @@ public struct CModelIndex
 
 public abstract unsafe partial class QcAbstractItemModel : IDisposable
 {
-    private readonly QObjectStar _handle;
-
-    [LibraryImport(QObject.libraryName)]
-    private static partial QObjectStar CreateAbstractItemModel(nint managedHandle, void** vmt);
-    public static QcAbstractItemModel FromHandle(nint managedHandle)
-    {
-        return (QcAbstractItemModel)GCHandle.FromIntPtr(managedHandle).Target!;
-    }
-
-    public QObjectStar Handle => _handle;
+    private readonly QcAbstractItemModel_Unmanaged _unmanagedHandle;
+    internal QcAbstractItemModel_Unmanaged UnmanagedModel => _unmanagedHandle;
 
     protected QcAbstractItemModel()
     {
         var vmt = stackalloc void*[8]
         {
-            (delegate* unmanaged<nint, CModelIndex, int>)&qmodel_rowcount,
-            (delegate* unmanaged<nint, CModelIndex, QtItemDataRole, CVariant>)&qmodel_data,
-            (delegate* unmanaged<nint, int, QtOrientation, QtItemDataRole, CVariant>)&qmodel_headerdata,
-            (delegate* unmanaged<nint, CModelIndex, int>)&qmodel_columncount,
-            (delegate* unmanaged<nint, int, int, CModelIndex, CModelIndex>)&qmodel_index,
-            (delegate* unmanaged<nint, CModelIndex, CModelIndex>)&qmodel_parent,
-            (delegate* unmanaged<nint, CModelIndex, QtItemFlag>)&qmodel_flags,
-            (delegate* unmanaged<nint, CModelIndex, CVariant, QtItemDataRole, int>)&qmodel_setdata
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, int>)&rowCount,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, QtItemDataRole, CVariant>)&data,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, int, QtOrientation, QtItemDataRole, CVariant>)&headerdata,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, int>)&columncount,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, int, int, CModelIndex, CModelIndex>)&index,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, CModelIndex>)&parent,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, QtItemFlag>)&flags,
+            (delegate* unmanaged<QcAbstractItemModel_Unmanaged, CModelIndex, CVariant, QtItemDataRole, int>)&setdata
         };
-        _handle = CreateAbstractItemModel((nint)GCHandle.Alloc(this), vmt);
+        _unmanagedHandle = new(this, vmt);
     }
 
-    protected static void DoStuff() { }
-
     [UnmanagedCallersOnly]
-    private static int qmodel_rowcount(nint managedHandle, CModelIndex parent)
+    private static int rowCount(QcAbstractItemModel_Unmanaged sender, CModelIndex parent)
     {
-        return FromHandle(managedHandle).GetRowCount(parent);
+        return sender.ManagedModel.GetRowCount(parent);
     }
     protected abstract int GetRowCount(CModelIndex parent);
 
     [UnmanagedCallersOnly]
-    private static CVariant qmodel_data(nint managedHandle, CModelIndex index, QtItemDataRole role)
+    private static CVariant data(QcAbstractItemModel_Unmanaged sender, CModelIndex index, QtItemDataRole role)
     {
-        return FromHandle(managedHandle).GetData(index, role);
+        return sender.ManagedModel.GetData(index, role);
     }
     protected abstract CVariant GetData(CModelIndex index, QtItemDataRole role);
 
     [UnmanagedCallersOnly]
-    private static CVariant qmodel_headerdata(nint managedHandle, int section, QtOrientation orientation, QtItemDataRole role)
+    private static CVariant headerdata(QcAbstractItemModel_Unmanaged sender, int section, QtOrientation orientation, QtItemDataRole role)
     {
-        return FromHandle(managedHandle).GetHeaderData(section, orientation, role);
+        return sender.ManagedModel.GetHeaderData(section, orientation, role);
     }
     protected abstract CVariant GetHeaderData(int section, QtOrientation orientation, QtItemDataRole role);
 
     [UnmanagedCallersOnly]
-    private static int qmodel_columncount(nint managedHandle, CModelIndex parent)
+    private static int columncount(QcAbstractItemModel_Unmanaged sender, CModelIndex parent)
     {
-        return FromHandle(managedHandle).GetColumnCount(parent);
+        return sender.ManagedModel.GetColumnCount(parent);
     }
     protected abstract int GetColumnCount(CModelIndex parent);
 
 
     [UnmanagedCallersOnly]
-    private static CModelIndex qmodel_index(nint managedHandle, int row, int column, CModelIndex parent)
+    private static CModelIndex index(QcAbstractItemModel_Unmanaged sender, int row, int column, CModelIndex parent)
     {
-        return FromHandle(managedHandle).CreateIndex(row, column, parent);
+        return sender.ManagedModel.CreateIndex(row, column, parent);
     }
     protected abstract CModelIndex CreateIndex(int row, int column, CModelIndex parent);
 
     [UnmanagedCallersOnly]
-    private static CModelIndex qmodel_parent(nint managedHandle, CModelIndex index)
+    private static CModelIndex parent(QcAbstractItemModel_Unmanaged sender, CModelIndex index)
     {
-        return FromHandle(managedHandle).GetParent(index);
+        return sender.ManagedModel.GetParent(index);
     }
     protected abstract CModelIndex GetParent(CModelIndex index);
 
     [UnmanagedCallersOnly]
-    private static QtItemFlag qmodel_flags(nint managedHandle, CModelIndex index)
+    private static QtItemFlag flags(QcAbstractItemModel_Unmanaged sender, CModelIndex index)
     {
-        return FromHandle(managedHandle).GetFlags(index);
+        return sender.ManagedModel.GetFlags(index);
     }
     protected abstract QtItemFlag GetFlags(CModelIndex index);
 
     [UnmanagedCallersOnly]
-    private static int qmodel_setdata(nint managedHandle, CModelIndex index, CVariant value, QtItemDataRole role)
+    private static int setdata(QcAbstractItemModel_Unmanaged sender, CModelIndex index, CVariant value, QtItemDataRole role)
     {
-        return FromHandle(managedHandle).TrySetData(index, value, role) ? 1 : 0;
+        return sender.ManagedModel.TrySetData(index, value, role) ? 1 : 0;
     }
     protected abstract bool TrySetData(CModelIndex index, CVariant value, QtItemDataRole role);
 
-    [LibraryImport(QObject.libraryName)]
-    private static partial void EmitDataChangedCore(QObjectStar model, CModelIndex topLeft, CModelIndex bottomRight);
     protected void EmitDataChanged(CModelIndex topLeft, CModelIndex bottomRight)
     {
-        EmitDataChangedCore(_handle, topLeft, bottomRight);
+        _unmanagedHandle.EmitDataChanged(topLeft, bottomRight);
     }
 
     public virtual void Dispose()
     {
-        var gcHandle = (GCHandle)_handle.GetProperty<nint>("managedHandle");
-        Qt.delete(_handle);
-        gcHandle.Free();
+        _unmanagedHandle.Dispose();
     }
 }
 

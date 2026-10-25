@@ -10,23 +10,14 @@ public interface ISignalReceiver
 
 public unsafe static partial class QcSignalRouter
 {
-    [LibraryImport(QObject.libraryName, StringMarshalling = StringMarshalling.Utf8)]
-    private static partial void ConnectSignalCore(QObjectStar target, string signalName, nint router);
-    [LibraryImport(QObject.libraryName)]
-    private static partial void ConnectEventsCore(QObjectStar target, nint router);
-    [LibraryImport(QObject.libraryName)]
-    private static partial nint CreateSignalRouter(delegate* unmanaged<QObjectStar, byte*, void> route);
-
-    private static Lazy<nint> _router = new(() => CreateSignalRouter(&RouteSignalCore));
-    public static void ConnectSignal(QObjectStar target, string signalName) => ConnectSignalCore(target, signalName, _router.Value);
-    public static void ConnectEvents(QObjectStar target) => ConnectEventsCore(target, _router.Value);
+    private static Lazy<QcSignalRouter_Unmanaged> _router = new(() => new(&RouteSignalCore));
+    public static void ConnectSignal(QObjectStar target, string signalName) => _router.Value.ConnectSignal(target, signalName);
+    public static void ConnectEvents(QObjectStar target) => _router.Value.ConnectEvents(target);
 
     [UnmanagedCallersOnly]
     private static void RouteSignalCore(QObjectStar sender, byte* signalName)
     {
         var signalNameUtf8 = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(signalName);
-
-        var parentSubscriberFound = false;
         for (var nextSender = sender; nextSender.Handle != 0; nextSender = nextSender.Parent)
         {
             if (_subscribers.TryGetValue(nextSender, out var subscribers))
@@ -37,14 +28,10 @@ public unsafe static partial class QcSignalRouter
                 {
                     subscriber.ProcessSignal(sender, signalNameUtf16);
                 }
-                break;
+                return;
             }
         }
-
-        if (!parentSubscriberFound)
-        {
-            throw new InvalidOperationException("We received a signal from a QObject without an ISignalReceiver parent!");
-        }
+        throw new InvalidOperationException("We received a signal from a QObject without an ISignalReceiver parent!");
     }
 
     private static Dictionary<QObjectStar, List<ISignalReceiver>> _subscribers = new();
